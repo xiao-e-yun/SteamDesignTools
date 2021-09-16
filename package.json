@@ -1,0 +1,42 @@
+{
+  "name": "core",
+  "version": "1.0.0",
+  "description": "SteamDesignTools",
+  "main": "build/server/index.js",
+  "scripts": {
+    "start": "NODE_ENV=development supervisor --inspect ./build/server",
+    "dev": "node dev",
+    "build": "node build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xiao-e-yun/SteamDesignTools.git"
+  },
+  "bin": "build/server/index.js",
+  "author": "xiao-e-yun",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/xiao-e-yun/SteamDesignTools/issues"
+  },
+  "homepage": "https://github.com/xiao-e-yun/SteamDesignTools#readme",
+  "private": true,
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^16.9.1",
+    "@types/ws": "^7.4.7"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "is-port-reachable": "^3.0.0",
+    "jimp": "^0.16.1",
+    "ws": "^8.2.2"
+  },
+  "pkg": {
+    "scripts": "build/server/**/*.js",
+    "assets": "build/www/**/*",
+    "targets": [
+      "node14-win-x64"
+    ],
+    "outputPath": "dist/"
+  }
+}
