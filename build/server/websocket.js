@@ -7,7 +7,7 @@ class default_1 {
         this._sync_list = {};
         this.ws = ws;
         console.log(this._info + "已連線");
-        this.ws.addEventListener("message", (event) => {
+        this.ws.addEventListener("message", async (event) => {
             const $data = JSON.parse(event.data);
             switch ($data.type) {
                 case "get":
@@ -18,6 +18,8 @@ class default_1 {
                     else
                         $return = this.event[$data.key]($data);
                     if ($data.type === "get") {
+                        if ($return.then)
+                            $return = await $return;
                         const req = JSON.stringify({ key: $data.key, data: $return, hash: $data.hash, type: "receive" });
                         this.ws.send(req);
                     }
@@ -55,9 +57,6 @@ class default_1 {
         const req = JSON.stringify({ key: key, data: data, type: "send" });
         this.ws.send(req);
     }
-    //==========================================
-    //      sync 互動
-    //==========================================
     async get(key, data) {
         const hash = this._hash();
         const req = JSON.stringify({ key: key, data: data, type: "get", hash });

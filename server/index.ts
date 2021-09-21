@@ -4,23 +4,20 @@ import express from 'express'
 import SocketServer from 'ws'
 import { Server } from 'http'
 import process from "process"
-import path from 'path'
 
 //@ts-ignore 這個沒有定義
 import isPortReachable = require('is-port-reachable');
 
 //自訂的module
 import _websocket from './websocket'
+import * as utils from "./utils"
 import main from './main'
-import $app from './app'
 
-const root_path = path.join(__dirname, '../')
-const www_path = path.join(root_path, 'www/')
 ;(async () => {
     //初始化
-    const tmp_path = path.join(root_path + "tmp/")
+    const tmp_path = utils.path("tmp")
     if(!exists(tmp_path)) fs.mkdir(tmp_path)
-    const config_path = path.join(root_path + "config.json")
+    const config_path = utils.path("config")
     if(!exists(config_path)) fs.writeFile(config_path,"{}")
     
     //啟動伺服器
@@ -41,13 +38,16 @@ const www_path = path.join(root_path, 'www/')
     server = app.listen(port, () => {
 
     })
-    const wss = new SocketServer.Server({ server })
+    const wss = new SocketServer.Server({
+        server,
+        maxPayload: 1024 * 1024 * 1024 * 2 //2GB
+    })
 
     if (process.env.NODE_ENV === "development") {
         console.log("開發模式")
         console.log(`請手動開啟 http://localhost:${port}`)
     } else //啟動瀏覽器 
-        child_process.exec(`start msedge --app=http://localhost:${port}`)
+        child_process.exec(`start msedge --app=http://localhost:${port} --window-size=1200,600`)
 
     //當 WebSocket 從外部連結時執行
     let connection_count = 0
@@ -59,7 +59,7 @@ const www_path = path.join(root_path, 'www/')
 
         //開始收發資料
         websocket = new _websocket(ws)
-        main(websocket, new $app)
+        main(websocket)
         ws.on('close', () => {
             connection_count--
             timeout = setTimeout(() => {
@@ -69,8 +69,8 @@ const www_path = path.join(root_path, 'www/')
         })
     })
 
-    app.use(express.static(www_path))
+    app.use(express.static(utils.path('www')))
     app.get('*', function (req, res) {
-        res.sendFile(path.join(www_path, 'index.html'));
+        res.sendFile(utils.path('www','index.html'));
     });
 })()

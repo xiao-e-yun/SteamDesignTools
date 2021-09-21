@@ -1,10 +1,11 @@
 import { ComponentCustomProperties } from 'vue'
-import { Store } from 'vuex'
 import { State } from '.'
+import ws from '@/websocket'
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
-    $router: Router
-    $store: State
+    $router: Router,
+    $store: State,
+    $ws: ws
   }
 }

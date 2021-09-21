@@ -13,12 +13,14 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env"
+      "webpack-env",
+      "protocol",
     ],
     "paths": {
       "@/*": [
         "src/*"
-      ]
+      ],
+      "VS/*" : ["../types/*","*"],
     },
     "lib": [
       "esnext",
@@ -27,8 +29,8 @@
       "scripthost"
     ],
     "typeRoots": [
-      "./types"
-    ]
+      "../types",
+    ],
   },
   "include": [
     "src/**/*.ts",
@@ -36,7 +38,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx"
-, "types/global.d.ts", "types/shims-vue.d.ts"  ],
+, "src/types/global.d.ts", "src/types/shims-vue.d.ts"  ],
   "exclude": [
     "node_modules"
   ]

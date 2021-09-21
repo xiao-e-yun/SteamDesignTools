@@ -2,13 +2,19 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import {router} from "./router";
 import { store , key} from "./store";
-import ws from "./websocket";
+import _ws from "./websocket";
 
-window.ws = new ws();
-addEventListener("resize",()=>window.resizeTo(1200,600))
+addEventListener("resize",()=>window.resizeTo(1200,600));window.resizeTo(1200,600)
+
+const ws = window.ws = new _ws()
 
 console.log("啟動GUI")
-createApp(App)
+const app = createApp(App)
+
+const app_prop = app.config.globalProperties
+app_prop.$ws = ws
+
+app
     .use(store,key)
     .use(router)
-    .mount("#root");
+    .mount("#root")

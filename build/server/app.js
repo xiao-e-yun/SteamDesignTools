@@ -1,36 +1,45 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const jimp_1 = __importDefault(require("jimp"));
-const path_1 = __importDefault(require("path"));
-const root_path = path_1.default.join(__dirname, '../');
-const tmp_path = path_1.default.join(root_path + "tmp/");
-const config_path = path_1.default.join(root_path + "config.json");
+const worker_threads_1 = require("worker_threads");
+const utils_1 = require("./utils");
+// 功能實現
 class default_1 {
     constructor() {
-        this.steam_profile_size = {
-            0: { name: "精選藝術作品展示欄", value: 630 },
-            1: { name: "藝術作品展示欄", value: 615 },
-        };
+        this.steam_profile_size = [
+            { name: "精選藝術作品展示欄", value: 630 },
+            { name: "藝術作品展示欄", value: 615 },
+        ];
     }
-    resize(type, imgs) {
-        const size = this.steam_profile_size[type];
-        imgs.forEach(data => {
-            const base64str = data.data.split(",")[1];
-            const buf = Buffer.from(base64str, 'base64');
-            jimp_1.default.read(buf, (err, image) => {
-                if (err)
-                    throw err;
-                else {
-                    if (image.bitmap.width !== size.value)
-                        image.resize(size.value, jimp_1.default.AUTO);
-                    tmp_path + "";
-                    image.write(tmp_path + data.name);
-                }
-            });
+    async build(data) {
+        const size = this.steam_profile_size[data.option.main];
+        const new_imgs = imgs.map(img => {
+            return {
+                size,
+                name: img.name,
+                base64img: img.data,
+            };
         });
+        return this.worker("build", option, new_imgs);
+    }
+    worker(type, option, data) {
+        let thread_count = 5;
+        console.log("多線程處理:" + data.length);
+        const worker_threads = [];
+        while (thread_count > 0) {
+            const take = Math.floor(data.length / thread_count);
+            const worker_data = data.splice(0, take);
+            thread_count--;
+            if (worker_data.length === 0) {
+                if (data.length === 0)
+                    break;
+                continue;
+            }
+            worker_threads.push(new Promise((resolve) => {
+                new worker_threads_1.Worker(utils_1.path("server", "threads.js"), { workerData: { type, data: { option, imgs_data: worker_data } } })
+                    .on("exit", (e) => resolve(e));
+            }));
+        }
+        return Promise.all(worker_threads);
     }
 }
 exports.default = default_1;

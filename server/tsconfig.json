@@ -7,6 +7,15 @@
         "sourceMap": true,
         "moduleResolution":"Node",
         "esModuleInterop": true,
+        "baseUrl": "./",
+        "typeRoots": [
+            "node_modules/@types",
+        ],
+        "paths": {
+            "VS/*": [
+                "../types/*"
+            ]
+        }
     },
     "include": [
         "*.ts",

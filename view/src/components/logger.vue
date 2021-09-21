@@ -1,23 +1,26 @@
 <template>
     <div id="logger">
-        <div v-for="(log,index) in logger" :key="index">
-            <button @click="logger.splice(index, 1)"></button>
-            <h2 v-html="log.title"></h2>
-            <p v-html="log.content"></p>
-        </div>
+        <transition-group name="fade" mode="out-in">
+            <div v-for="(log,index) in logger" :key="index">
+                <button @click="logger.splice(index, 1)"></button>
+                <h2 v-html="log.title"></h2>
+                <p v-html="log.content"></p>
+            </div>
+        </transition-group>
     </div>
 </template>
 
 <script lang="ts">
-import { Vue, Options, setup } from "vue-class-component";
 import { useStore } from "../store";
-import { toRef} from "vue";
+import { defineComponent, toRef} from "vue";
 
-@Options({
+export default defineComponent({
+    setup(){
+        return {
+            logger: toRef(useStore().state,"logger")
+        }
+    }
 })
-export default class extends Vue {
-    logger = setup(()=>{ return toRef(useStore().state,"logger") })
-}
 </script>
 
 <style lang="scss">

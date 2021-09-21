@@ -47,11 +47,24 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from 'vue'
 const preview_length = localStorage.getItem("preview_length");
 
-@Options({
-  props: ["imgs"],
+
+export default defineComponent({
+  props: {
+    imgs:{
+      type: Array,
+      required: true
+    },
+  },
+  data() {
+    return {
+      preview_size: preview_length === null ? 4 : parseInt(preview_length),
+      show_imgs: false,
+      fullscreen_view: false,
+    };
+  },
   computed: {
     preview() {
       const preview_list = this.imgs.slice(0, this.preview_size);
@@ -70,15 +83,6 @@ const preview_length = localStorage.getItem("preview_length");
     },
   },
 })
-export default class Home extends Vue {
-  data() {
-    return {
-      preview_size: preview_length === null ? 4 : parseInt(preview_length),
-      show_imgs: false,
-      fullscreen_view: false,
-    };
-  }
-}
 </script>
 
 <style lang="scss">

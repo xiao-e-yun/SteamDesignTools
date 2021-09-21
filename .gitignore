@@ -1,3 +1,5 @@
 # created by virtualenv automatically
 node_modules
 .vscode
+build
+dist

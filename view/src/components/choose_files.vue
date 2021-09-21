@@ -14,16 +14,18 @@
             type="file"
             @change="file_change"
             multiple="multiple"
-            accept=".jpg,.png"
+            accept=".gif,.jpg,.png"
             ref="input"
         />
     </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { mixin } from '@/store'
+import { defineComponent } from 'vue'
 
-@Options({
+export default defineComponent({
+  mixins: [mixin],
   methods:{
     //拖入檔案
     drag_file(e:DragEvent){
@@ -41,23 +43,18 @@ import { Options, Vue } from "vue-class-component";
     },
     file_change(e:InputEvent){
         const input = e.target as HTMLInputElement
-        this.upload(input.files)
+        this.upload(input.files as FileList)
         input.value = ""
     },
     //通知父層
     upload(files:FileList){
         this.$emit("files",files)
     },
-    log(title:string,content:string){
-        this.$store.commit("log",{title:title,content:content})
-    },
-  }
-})
-export default class Home extends Vue {
+  },
   data(){return{
     dragenter:0,
   }}
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -1,33 +1,39 @@
 <template>
   <div id="app">
     <transition name="fade">
-        <div v-if="loading" id="loading"><span class="loader"><span class="loader_inner"></span></span></div>
+      <div v-if="loading" id="loading">
+        <span class="loader"><span class="loader_inner"></span></span>
+      </div>
     </transition>
     <SidebarTemplate />
-    <router-view id="main" />
+    <router-view v-slot="{ Component }">
+      <keep-alive v-if="$route.meta.keepAlive !== false">
+        <component id="main" :is="Component" />
+      </keep-alive>
+      <component id="main" :is="Component" v-else />
+    </router-view>
     <LoggerTemplate />
   </div>
 </template>
 
 <script lang="ts">
-/// <reference path="../types/global.d.ts" />
-import { Options, Vue, setup } from "vue-class-component";
 import { useStore } from "./store";
-import { ref, toRef } from "vue";
+import { defineComponent, toRef } from "vue";
 import Sidebar from "./components/sidebar.vue";
 import Logger from "./components/logger.vue";
-window.ws
-@Options({
+
+export default defineComponent({
   components: {
     SidebarTemplate: Sidebar,
     LoggerTemplate: Logger,
   },
+  setup(){
+    const loading = toRef(useStore().state, "loading")
+    return {
+      loading
+    };
+  },
 })
-export default class extends Vue {
-  loading = setup(() => {
-    return toRef(useStore().state, "loading");
-  });
-}
 </script>
 
 <style lang="scss">
@@ -43,8 +49,8 @@ export default class extends Vue {
 }
 
 * {
-    font-family: "Microsoft JhengHei";
-    box-sizing: border-box;
+  font-family: "Microsoft JhengHei";
+  box-sizing: border-box;
 }
 
 body {
@@ -61,7 +67,7 @@ body {
 
 #main {
   width: 100%;
-  padding: 0 1.5em;
+  padding: 1.5em 1.5em 0 1.5em;
   overflow: overlay;
   align-items: baseline;
   display: flex;
@@ -133,10 +139,10 @@ body {
   }
 }
 .fade-enter-active {
-  animation: fade_in .4s;
+  animation: fade_in 0.4s;
 }
 .fade-leave-active {
-  animation: fade_in .4s reverse;
+  animation: fade_in 0.4s reverse;
 }
 @keyframes fade_in {
   0% {

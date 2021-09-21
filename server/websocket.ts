@@ -1,26 +1,29 @@
+import DataType from "VS/protocol"
 import SocketServer = require('ws')
+
 export default class {
-    constructor(ws:SocketServer) {
+    constructor(ws: SocketServer) {
         this.ws = ws
         console.log(this._info + "已連線")
-        this.ws.addEventListener("message", (event) => {
-            const $data = JSON.parse(event.data) as WebSocketEvent["sender"]|WebSocketEvent["receiver"]
+        this.ws.addEventListener("message", async (event) => {
+            const $data = JSON.parse(event.data) as WebSocketEvent["sender"] | WebSocketEvent["receiver"]
             switch ($data.type) {
                 case "get":
-                case "send":{
+                case "send": {
                     let $return = null
                     if (typeof this.event[$data.key] === "undefined") console.warn(this._info + $data.type + "|" + $data.key + "|未註冊")
                     else $return = this.event[$data.key]($data)
-                    
-                    if( $data.type === "get") {
-                        const req = JSON.stringify({ key: $data.key, data: $return, hash:$data.hash, type: "receive"} as WebSocketEvent["receiver"])
+
+                    if ($data.type === "get") {
+                        if ($return.then) $return = await $return
+                        const req = JSON.stringify({ key: $data.key, data: $return, hash: $data.hash, type: "receive" } as WebSocketEvent["receiver"])
                         this.ws.send(req)
                     }
                     break
                 }
-                case "receive":{
+                case "receive": {
                     const sysc_list = this._sync_list
-                    if(typeof sysc_list[$data.hash] === "undefined") return
+                    if (typeof sysc_list[$data.hash] === "undefined") return
                     sysc_list[$data.hash]($data as WebSocketEvent["receiver"])
                     delete sysc_list[$data.hash]
                     break
@@ -30,6 +33,7 @@ export default class {
         this.ws.addEventListener("close", () => console.error(this._info + "已斷線"))
     }
 
+    on<T extends keyof DataType>(key: T, fun: (data: WebSocketEvent<T>["sender"]) => any): void
     on(key: string, fun: (data: WebSocketEvent["sender"]) => any) {
         if (this.event[key]) console.warn(this._info + key + "|重複註冊")
         else {
@@ -38,6 +42,7 @@ export default class {
         }
     }
 
+    off<T extends keyof DataType>(key: T): void
     off(key: string) {
         if (!this.event[key]) console.warn(this._info + key + "|嘗試刪除未註冊")
         else {
@@ -46,6 +51,7 @@ export default class {
         }
     }
 
+    send<T extends keyof DataType>(key: T, data: DataType[T]["req"]): void
     send(key: string, data: any) {
         const req = JSON.stringify({ key: key, data: data, type: "send" } as WebSocketEvent["sender"])
         this.ws.send(req)
@@ -55,9 +61,10 @@ export default class {
     //      sync 互動
     //==========================================
 
+    get<T extends keyof DataType>(key: T, data: DataType[T]["req"]): Promise<DataType[T]["req"]>
     async get(key: string, data: any) {
         const hash = this._hash()
-        const req = JSON.stringify({ key: key, data: data, type: "get", hash} as WebSocketEvent["sender"])
+        const req = JSON.stringify({ key: key, data: data, type: "get", hash } as WebSocketEvent["sender"])
         this.ws.send(req)
         return new Promise((resolve, reject) => this._sync_list[hash] = resolve)
     }
@@ -69,7 +76,7 @@ export default class {
     private _hash() { let result = ''; const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; for (let i = 0; i < 12; i++)result += characters.charAt(Math.floor(Math.random() * 62)); return result }
 }
 
-interface WebSocketEvent {
-    sender: { key: string, data: any,hash?:string ,type:"send"|"get"}
-    receiver: { key: string, data: any,hash:string ,type:"receive"}
+interface WebSocketEvent<T extends keyof DataType = keyof DataType> {
+    sender: { key: string, data: DataType[T]["req"], type: "send" } | { key: string, data: DataType[T]["req"], hash: string, type: "get" }
+    receiver: { key: string, data: DataType[T]["req"], hash: string, type: "receive" }
 }

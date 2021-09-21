@@ -2,22 +2,18 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/home.vue";
 
 
-function import_vue(name:string){return import(`../views/${name}.vue`)}
+function import_vue(name:string){return ()=>import(`../views/${name}.vue`)}
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "首頁",
     component: Home,
   },
+  //
   {
-    path: "/resize",
-    name: "調整圖片",
-    component:()=>import_vue("resize"),
-  },
-  {
-    path: "/add_bg",
-    name: "新增背景",
-    component:()=>import_vue("add_bg"),
+    path: "/settings",
+    name: "設置",
+    component: import_vue("settings"),
   },
 ];
 
