@@ -1,17 +1,12 @@
-export default interface DataType {
+import config from "../config"
+export interface DataType
+<Iconfig extends keyof config = keyof config>{
     build:{
         req : {
             option:DataType["build"]["option"],
             imgs:{
                 name: string,
                 data: string,
-            }[]
-        },
-        worker : {
-            option:DataType["build"]["option"],
-            data:{
-                name: string;
-                base64img: string;
             }[]
         },
         option:{
@@ -23,5 +18,29 @@ export default interface DataType {
                 url:string, //取得圖片 
             },
         },
+        resolve:boolean,
     },
+    config:{
+        req:undefined,
+        resolve:config
+    }
+    upload_config:{
+        req:
+        {
+            key:Iconfig
+            val:config[Iconfig]
+        }[]
+        resolve:void
+    }
+}
+
+export interface WorkerDataType
+{
+    build:{
+        option:DataType["build"]["option"],
+        data:{
+            name: string;
+            base64img: string;
+        }[]
+    }
 }

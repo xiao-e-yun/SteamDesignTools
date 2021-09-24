@@ -1,34 +1,46 @@
 const $exec = require('child_process').exec
 const $fs = require('fs')
-const fs = $fs.promises
+const fs = $fs.promises;
 
-process.chdir(__dirname+"/../")
+(async()=>{
+    process.chdir(__dirname+"/../")
+    const has = await fs.readdir(".")
+    if (has.indexOf("dist") == -1)  await fs.mkdir("dist")
+    else {await fs.rmdir("dist", {recursive: true});await fs.mkdir("dist")}
+    if (has.indexOf("build") == -1)  await fs.mkdir("build")
+    if ((await fs.readdir("./build")).indexOf("lib") == -1)  await fs.mkdir("build/lib")
+    
+    console.log("原始檔編譯中")
 
-console.log("原始檔編譯中")
+    const promise = []
+    promise.push(
+        exec("tsc -p " + "./server/tsconfig.json").then($done),
+        exec(`npx vue-cli-service build --mode production --dest ../build/www --target app --modern --fix`,{cwd:"./view"}).then($done),
+        fs.readdir("./lib").then((files)=>{
+            files.map(file => {
+                return fs.copyFile("./lib/" + file, "./build/lib/" + file)
+            })
+            Promise.all(files)
+        }),
+    )
 
-exec("tsc -p " + "./server/tsconfig.json").then(done)
+    Promise.all(promise).then(done)
+    function $done({error,stderr,stdout}){console.log(error, "\n\n\n", stderr, "\n\n\n", stdout)}
+})();
 
-exec(`npx vue-cli-service build --mode production --dest ../build/www --target app --modern --fix`,{cwd:"./view"}).then(done)
-
-fs.readdir("./lib").then((files)=>{
-    files.map(file => {
-        return fs.copyFile("./lib/" + file, "./build/lib/" + file)
-    })
-    Promise.all(files).then(() => done({error:"", stdout:"", stderr:""}))
-})
-
-let i = 0
-async function done({error, stdout, stderr}) {
-    console.log(error, "\n\n\n", stderr, "\n\n\n", stdout)
-    if (i < 2) return i++
+async function done() {
     console.log("原始檔編譯完成")
     console.log("二進制編譯中")
-    await exec("pkg package.json -o=dist/SteamDesignTools_has_console")
-
+    const promise = []
+    promise.push(exec("pkg package.json -o=dist/core"))
+    promise.push(exec("cargo build --release",{cwd:"./launcher"}).then(async()=>{
+        await fs.rename("./launcher/dist/release/launcher.exe", "./dist/SteamDesignTools.exe")
+        await fs.rename("./build/www", "./dist/www")
+        await fs.rename("./build/lib", "./dist/lib")
+    }))
+    await Promise.all(promise)
+    
     console.log("二進制編譯完成")
-    await exec("create-nodew-exe SteamDesignTools_has_console.exe SteamDesignTools.exe",{cwd:"./dist"})
-    await exec(`../tools/ResourceHacker.exe -open SteamDesignTools.exe -save SteamDesignTools.exe -action addoverwrite -res ../logo.ico -mask ICONGROUP,1`,{cwd:"./dist"})
-    await exec(`ie4uinit.exe -ClearIconCache -show`,{cwd:"./dist"})
 }
 
 function exec(cmd,options) {

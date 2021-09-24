@@ -1,6 +1,6 @@
 import { promises as fs } from "fs"
 import Jimp from "jimp"
-import { path, worker } from "./utils"
+import { config, path, worker } from "./utils"
 import _ws from "./websocket"
 import { basename } from "path"
 import { exec } from "child_process"
@@ -84,4 +84,7 @@ export default function (ws: _ws) {
 
         return true
     })
+
+    ws.on("upload_config", async ($data) => config($data.data))
+    ws.on("config", async () => { return config() })
 }

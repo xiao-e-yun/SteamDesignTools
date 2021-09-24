@@ -1,13 +1,13 @@
 import { workerData } from 'worker_threads'
-import DataType from 'VS/protocol'
+import { WorkerDataType } from 'VS/protocol'
 import { path } from './utils'
 import { extname, basename } from "path"
 import Jimp from 'jimp'
 
 // 多線程運算
 (async()=>{
-    const $type = workerData.type as keyof DataType
-    const { option:$option, data:$data } = workerData.data as DataType[typeof $type]["worker"]
+    const $type = workerData.type as keyof WorkerDataType
+    const { option:$option, data:$data } = workerData.data as WorkerDataType[typeof $type]
     switch ($type) {
         case "build":{
             for (const data of $data) {                

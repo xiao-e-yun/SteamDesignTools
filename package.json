@@ -35,7 +35,6 @@
   },
   "pkg": {
     "scripts": "build/server/**/*.js",
-    "assets": ["build/www/**/*","build/lib/**/*"],
     "targets": [
       "node14-win-x64"
     ],

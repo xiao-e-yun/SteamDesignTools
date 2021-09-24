@@ -1,8 +1,8 @@
 import $path from 'path';
 import { promises as fs } from 'fs';
 import Config from "VS/config";
-import DataType from 'VS/Protocol';
 import { Worker } from 'worker_threads';
+import { WorkerDataType } from 'VS/Protocol';
 
 function path(path:"config"):string
 function path(path:"root"|"tmp"|"server"|"www"|"lib"|"output",filename?:string):string
@@ -11,8 +11,8 @@ function path(path: "server"|"www"|"lib"|"tmp"|"config"|"output"|"root", filenam
     const local_path = process.env.NODE_ENV === "development" ? snapshot_path : $path.dirname(process.execPath);
     return {
         server: $path.join(snapshot_path, "server", filename || ""),
-        www: $path.join(snapshot_path, "www", filename || ""),
-        lib: $path.join(snapshot_path, "lib", filename || ""),
+        www: $path.join(local_path, "www", filename || ""),
+        lib: $path.join(local_path, "lib", filename || ""),
         output: $path.join(local_path, "output", filename || ""),
         tmp: $path.join(local_path, "tmp", filename || ""),
         config: $path.join(local_path, "config.json"),
@@ -31,27 +31,28 @@ function config<Key extends keyof Config>(key: Key): Promise<Config[Key]>
  * @param key 要讀取的值
  * @param val 要設定的值
  */
-function config<Key extends keyof Config>(key: Key, val: Config[Key]): void
+function config<Key extends keyof Config>(key_and_val:{key: Key, val: Config[Key]}[]): void
 
 /** @returns 整個 Config */
 function config(): Promise<Config>
 
 async function config<Key extends keyof Config>
-    (key?: Key, val?: Config[Key]) {
+    (key?: Key | {key: Key, val: Config[Key]}[]) {
     const config_path = path("config");
     const f = await fs.readFile(config_path, "utf8");
     const config = JSON.parse(f) as Config;
     if (key === undefined) return config
-    else if (val === undefined) return config[key]
+    else if (typeof key === "string") return config[key]
     else {
-        // 設定
-        config[key] = val;
+        for (const item of key) {
+            config[item.key] = item.val;
+        } // 設定
         fs.writeFile(config_path, JSON.stringify(config));
     }
 }
 
-async function worker<T extends keyof DataType>
-(type: T , option:DataType[T]["worker"]["option"] , data: DataType[T]["worker"]["data"]) {
+async function worker<T extends keyof WorkerDataType>
+(type: T, option:WorkerDataType[T]["option"] , data: WorkerDataType[T]["data"]) {
     let thread_count = (await config()).thread_count || 5
 
     console.log("多線程處理:" + data.length + "\n允許線程數:" + thread_count)

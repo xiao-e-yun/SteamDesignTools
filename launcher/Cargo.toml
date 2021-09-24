@@ -1,9 +1,13 @@
 [package]
 name = "launcher"
 version = "0.1.0"
-edition = "2018"
+edition = '2018'
 
 [build]
 target-dir = "dist"
 
 [dependencies]
+notify-rust = "4"
+
+[target.'cfg(windows)'.build-dependencies]
+winres = "0.1"

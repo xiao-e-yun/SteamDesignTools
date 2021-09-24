@@ -54,12 +54,13 @@
                   ，直接複製網址。
                 </div>
               </div>
-              <p v-if="edit_setting.main === 0">
-                <input
-                  v-model="edit_setting.auto_cut"
-                  type="checkbox"
-                />自動切割<br />
-              </p>
+              
+              <p
+                v-if="edit_setting.main === 0"
+                @click="edit_setting.auto_cut = !edit_setting.auto_cut"
+                class="checkbox" :data-checked="edit_setting.auto_cut"
+              >自動切割</p>
+
               <button @click="build">開始構建</button>
             </div>
           </div>
@@ -74,7 +75,7 @@ import { defineComponent } from 'vue'
 import ChooseFiles from "@/components/choose_files.vue";
 import ViewFiles from "@/components/view_files.vue";
 import { mixin } from '@/store';
-import DataType from "VS/protocol"
+import { DataType } from "VS/protocol"
 
 
 export default defineComponent({
@@ -292,6 +293,27 @@ export default defineComponent({
       }
     }
   }
+
+  & > p {
+    &.checkbox {
+      display: flex;
+      align-items: center;
+      &::before{
+        content: "";
+        width: .8em;
+        height: .8em;
+        margin:.2em;
+        border: $border;
+        background-color: $side-3;
+        transition: background-color 0.1s;
+        cursor: pointer;
+      }
+      &[data-checked="true"]::before {
+        background-color: $main;
+      }
+    }
+  }
+
 
   & > button {
     width: 100%;

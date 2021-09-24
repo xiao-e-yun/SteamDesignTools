@@ -1,4 +1,4 @@
-import DataType from 'VS/protocol';
+import { DataType } from 'VS/protocol';
 export default class {
     constructor() {
         this.ws = new WebSocket("ws://localhost:" + location.port)
@@ -42,7 +42,7 @@ export default class {
         })
     }
 
-    on<T extends keyof DataType>(key: T, fun: (data: WebSocketEvent<T>["sender"]) => any): void
+    on<T extends keyof DataType>(key: T, fun: (data: WebSocketEvent<T>["sender"]) => DataType[T]["resolve"]|Promise<DataType[T]["resolve"]>): void
     on(key: string, fun: (data: WebSocketEvent["sender"]) => any) {
         if (this.event[key]) console.warn(this._info + key + "|重複註冊")
         else {
@@ -70,7 +70,7 @@ export default class {
     //      sync 互動
     //==========================================
 
-    get<T extends keyof DataType>(key: T, data:DataType[T]["req"]): Promise<DataType[T]["req"]>
+    get<T extends keyof DataType>(key: T, data:DataType[T]["req"]): Promise<WebSocketEvent<T>["receiver"]>
     async get(key: string, data: any) {
         const hash = this._hash()
         const req = JSON.stringify({ key: key, data: data, type: "get", hash } as WebSocketEvent["sender"])
@@ -91,5 +91,5 @@ export default class {
 
 interface WebSocketEvent<T extends keyof DataType = keyof DataType> {
     sender: { key: string, data: DataType[T]["req"], type: "send" } | { key: string, data: DataType[T]["req"], hash: string, type: "get" }
-    receiver: { key: string, data: DataType[T]["req"], hash: string, type: "receive" }
+    receiver: { key: string, data: DataType[T]["resolve"], hash: string, type: "receive" }
 }
