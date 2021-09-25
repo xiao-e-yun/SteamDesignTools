@@ -66,7 +66,10 @@
               <p
                 class="checkbox"
                 v-if="edit_setting.main === 0 && edit_setting.auto_cut"
-                @click="edit_setting.right_more_img_clip = !edit_setting.right_more_img_clip"
+                @click="
+                  edit_setting.right_more_img_clip =
+                    !edit_setting.right_more_img_clip
+                "
                 :data-checked="edit_setting.right_more_img_clip"
               >
                 裁減更多圖片
