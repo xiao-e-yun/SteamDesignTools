@@ -63,6 +63,14 @@
               >
                 自動切割
               </p>
+              <p
+                class="checkbox"
+                v-if="edit_setting.main === 0 && edit_setting.auto_cut"
+                @click="edit_setting.right_more_img_clip = !edit_setting.right_more_img_clip"
+                :data-checked="edit_setting.right_more_img_clip"
+              >
+                裁減更多圖片
+              </p>
 
               <button @click="build">開始構建</button>
             </div>
@@ -97,6 +105,7 @@ export default defineComponent({
         main: 0,
         size: 615,
         auto_cut: true,
+        right_more_img_clip: true,
         background: {
           url: "",
         },

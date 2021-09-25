@@ -27,7 +27,7 @@ import { exec as $exec } from 'child_process'
                 if($option.main === 0 && $option.auto_cut){
                     const height = img.bitmap.height
                     const left_img = img.clone().crop(0,0,506,height)
-                    const right_img = img.crop(515,0,100,height)
+                    const right_img = img.crop(515,0,100,height + ($option.right_more_img_clip?-70:0))
 
                     const $extname = extname(data.name)
                     const $basename = basename(data.name,$extname)
