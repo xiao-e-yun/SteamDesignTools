@@ -15,7 +15,7 @@ const fs = $fs.promises;
     const promise = []
     promise.push(
         exec("tsc -p " + "./server/tsconfig.json").then($done),
-        exec(`npx vue-cli-service build --mode production --dest ../build/www --target app --modern --fix`,{cwd:"./view"}).then($done),
+        exec(`npm run lint && npx vue-cli-service build --mode production --dest ../build/www --target app --modern --fix`,{cwd:"./view"}).then($done),
         fs.readdir("./lib").then((files)=>{
             files.map(file => {
                 return fs.copyFile("./lib/" + file, "./build/lib/" + file)

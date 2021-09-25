@@ -36,9 +36,9 @@
     </transition-group>
     <transition name="fade">
       <main
-      class="fullscreen_view"
-      v-if="fullscreen_view"
-      @click="fullscreen_view = false"
+        class="fullscreen_view"
+        v-if="fullscreen_view"
+        @click="fullscreen_view = false"
       >
         <img :title="fullscreen_view.name" :src="fullscreen_view.link_url" />
       </main>
@@ -47,15 +47,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 const preview_length = localStorage.getItem("preview_length");
-
 
 export default defineComponent({
   props: {
-    imgs:{
+    imgs: {
       type: Array,
-      required: true
+      required: true,
     },
   },
   data() {
@@ -82,7 +81,7 @@ export default defineComponent({
       immediate: true,
     },
   },
-})
+});
 </script>
 
 <style lang="scss">
@@ -156,6 +155,6 @@ export default defineComponent({
   }
 }
 .fade-move {
-  transition: all .4s;
+  transition: all 0.4s;
 }
 </style>

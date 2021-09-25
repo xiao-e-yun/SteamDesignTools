@@ -1,7 +1,7 @@
-import ws from '@/websocket'
+import ws from "@/websocket";
 
 declare global {
-  interface Window { 
-    ws : ws
+  interface Window {
+    ws: ws;
   }
 }

@@ -27,13 +27,13 @@ export default defineComponent({
     SidebarTemplate: Sidebar,
     LoggerTemplate: Logger,
   },
-  setup(){
-    const loading = toRef(useStore().state, "loading")
+  setup() {
+    const loading = toRef(useStore().state, "loading");
     return {
-      loading
+      loading,
     };
   },
-})
+});
 </script>
 
 <style lang="scss">

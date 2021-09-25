@@ -12,17 +12,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 import { list } from "../router";
 list.pop();
 
 export default defineComponent({
-    data() {
+  data() {
     return {
       list,
     };
-  }
-})
+  },
+});
 </script>
 
 <style lang="scss">

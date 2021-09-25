@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/home.vue";
 
-
-function import_vue(name:string){return ()=>import(`../views/${name}.vue`)}
+function import_vue(name: string) {
+  return () => import(`../views/${name}.vue`);
+}
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
@@ -22,12 +23,12 @@ const router = createRouter({
   routes,
 });
 
-const list = [] as {path:string,name:string,}[] 
+const list = [] as { path: string; name: string }[];
 for (const item of routes) {
   list.push({
-    path:item.path,
-    name:(item.name as string),
-  })
+    path: item.path,
+    name: item.name as string,
+  });
 }
 
-export {router,list}
+export { router, list };

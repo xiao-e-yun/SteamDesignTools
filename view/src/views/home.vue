@@ -54,12 +54,15 @@
                   ，直接複製網址。
                 </div>
               </div>
-              
+
               <p
+                class="checkbox"
                 v-if="edit_setting.main === 0"
                 @click="edit_setting.auto_cut = !edit_setting.auto_cut"
-                class="checkbox" :data-checked="edit_setting.auto_cut"
-              >自動切割</p>
+                :data-checked="edit_setting.auto_cut"
+              >
+                自動切割
+              </p>
 
               <button @click="build">開始構建</button>
             </div>
@@ -71,12 +74,11 @@
 </template>
 
 <script lang="tsx">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 import ChooseFiles from "@/components/choose_files.vue";
 import ViewFiles from "@/components/view_files.vue";
-import { mixin } from '@/store';
-import { DataType } from "VS/protocol"
-
+import { mixin } from "@/store";
+import { DataType } from "VS/protocol";
 
 export default defineComponent({
   components: {
@@ -87,29 +89,30 @@ export default defineComponent({
   mixins: [mixin],
 
   data() {
-    let edit_setting:DataType["build"]["req"]["option"]
-    const save = localStorage.getItem("steam_design_tools$build_setting")
-    if(save) edit_setting = JSON.parse(save)
-    else edit_setting = 
-    {
-      main: 0,
-      size: 615,
-      auto_cut: true,
-      background:{
-        url: "",
-      }
-    }
+    let edit_setting: DataType["build"]["req"]["option"];
+    const save = localStorage.getItem("steam_design_tools$build_setting");
+    if (save) edit_setting = JSON.parse(save);
+    else
+      edit_setting = {
+        main: 0,
+        size: 615,
+        auto_cut: true,
+        background: {
+          url: "",
+        },
+      };
     return {
-      imgs: [] as { name: string; link_url: string; file: File; }[],
+      imgs: [] as { name: string; link_url: string; file: File }[],
       dragenter: 0,
       show_build_type_list: false,
       edit_setting,
-      build_type:[
+      build_type: [
         {
-          name:"藝術作品展示欄",
+          name: "藝術作品展示欄",
           size: 615,
-        },{
-          name:"精選藝術作品展示欄",
+        },
+        {
+          name: "精選藝術作品展示欄",
           size: 630,
         },
       ],
@@ -117,37 +120,38 @@ export default defineComponent({
   },
 
   watch: {
-    edit_setting:{
-      handler(val){
-        localStorage.setItem("steam_design_tools$build_setting", JSON.stringify(val))
+    edit_setting: {
+      handler(val) {
+        localStorage.setItem(
+          "steam_design_tools$build_setting",
+          JSON.stringify(val)
+        );
       },
       deep: true,
-    }
+    },
   },
 
   methods: {
     get_bg_url(event: Event) {
-      let url = (event.target as HTMLInputElement).value?.trim()
-      
-      if(!/\.(gif|jpe?g|png)$/i.test(url) || url.indexOf("http") !== 0)
-      return this.edit_setting.background.url = ""
+      let url = (event.target as HTMLInputElement).value?.trim();
 
-      const index = url.indexOf("steam.design/#") // length === 14
-      if(index !== -1) url = url.substring(index + 14)
+      if (!/\.(gif|jpe?g|png)$/i.test(url) || url.indexOf("http") !== 0)
+        return (this.edit_setting.background.url = "");
 
-      this.edit_setting.background.url = url
+      const index = url.indexOf("steam.design/#"); // length === 14
+      if (index !== -1) url = url.substring(index + 14);
+
+      this.edit_setting.background.url = url;
     },
 
-
-    
-    upload($files: FileList):void {
+    upload($files: FileList): void {
       const imgs = [] as { name: string; link_url: string; file: File }[];
       const files = Array.from($files); //轉換成陣列
       for (const file of files) {
         //驗證檔案類型
         if (!/\.(gif|jpe?g|png)$/i.test(file.name)) {
-          this.log(`錯誤類型`,"")
-          return
+          this.log(`錯誤類型`, "");
+          return;
         }
         const name = file.name;
         const link_url = URL.createObjectURL(file);
@@ -158,21 +162,17 @@ export default defineComponent({
       });
       console.log("加載完成");
     },
-    
 
-
-    re_choose():void {
+    re_choose(): void {
       this.imgs = [];
     },
-
-
 
     async build(): Promise<void> {
       this.loading(true);
       const reader = new FileReader();
       const imgs = [] as DataType["build"]["req"]["imgs"];
       for (const img of this.imgs) {
-        const data = await read_img(img.file) as string;
+        const data = (await read_img(img.file)) as string;
         imgs.push({
           name: img.name,
           data,
@@ -180,7 +180,7 @@ export default defineComponent({
       }
 
       const option = this.edit_setting;
-      await this.$ws.get("build",{option,imgs})
+      await this.$ws.get("build", { option, imgs });
       this.loading(false);
 
       function read_img(img: File) {
@@ -191,7 +191,7 @@ export default defineComponent({
       }
     },
   },
-})
+});
 </script>
 
 <style lang="scss">
@@ -298,11 +298,11 @@ export default defineComponent({
     &.checkbox {
       display: flex;
       align-items: center;
-      &::before{
+      &::before {
         content: "";
-        width: .8em;
-        height: .8em;
-        margin:.2em;
+        width: 0.8em;
+        height: 0.8em;
+        margin: 0.2em;
         border: $border;
         background-color: $side-3;
         transition: background-color 0.1s;
@@ -314,16 +314,15 @@ export default defineComponent({
     }
   }
 
-
   & > button {
     width: 100%;
     font-size: 1.6em;
     margin-top: 0.6em;
     background-color: $side-2;
-    border:none;
+    border: none;
     color: $main;
     cursor: pointer;
-    transition:background-color .16s;
+    transition: background-color 0.16s;
     &:hover {
       background-color: $bg;
     }
