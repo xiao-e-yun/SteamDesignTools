@@ -53,7 +53,7 @@ import main from './main'
         process.exit()
     }, 5000)
 
-    wss.on('connection', ws => {
+    wss.on('connection',async ws => {
         connection_count++
         if (connection_count > 1) return ws.close() // 忽略連線
         if (timeout) clearTimeout(timeout)

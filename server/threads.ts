@@ -1,15 +1,16 @@
 import { workerData } from 'worker_threads'
 import { WorkerDataType } from 'VS/protocol'
-import { path } from './utils'
+import { hash, path } from './utils'
 import { extname, basename } from "path"
 import Jimp from 'jimp'
+import { exec as $exec } from 'child_process'
 
 // 多線程運算
-(async()=>{
-    const $type = workerData.type as keyof WorkerDataType
-    const { option:$option, data:$data } = workerData.data as WorkerDataType[typeof $type]
+(async($type:keyof WorkerDataType)=>{
+    const worker_data = workerData.data as unknown
     switch ($type) {
         case "build":{
+            const { option:$option, data:$data } = worker_data as WorkerDataType[typeof $type]
             for (const data of $data) {                
                 let img = await decode_image(data.base64img).catch(e=>{throw e})
                 img.resize($option.size,Jimp.AUTO)
@@ -39,8 +40,39 @@ import Jimp from 'jimp'
             }
             break;
         }
+        case "compression":{
+            const { option:$option, data:$data } = worker_data as WorkerDataType["compression"]
+            const pngquant = path("lib","pngquant.exe")
+            for (const data of $data) {                
+                const tmp = path("tmp","compression$" + data.name)
+                const out = path("output",data.name )
+
+                const img = await decode_image(data.data).catch(e=>{throw e})
+                if(img.getMIME() === Jimp.MIME_JPEG){
+                    await img.quality($option.quality[1]).writeAsync(out)
+                }else{
+                    await img.writeAsync(tmp)
+                    await exec(tmp,out)
+                }
+            }
+
+            function exec(tmp_path:string,output_path:string):Promise<void> {
+                const quality = $option.quality[0] + "-" + $option.quality[1]
+                const speed = $option.speed
+                return new Promise(resolve=>{
+                    const cmd = `\"${pngquant}\" --quality ${quality} --speed ${speed} - < \"${tmp_path}\" > \"${output_path}\"`
+                    console.log(cmd)
+                    $exec(cmd,{ encoding: 'utf8' },
+                    (e,s,stderr)=>{
+                        if(e) console.error(e,stderr)
+                        resolve()
+                    })
+                })
+            }
+            break;
+        }
     }
-})()
+})(workerData.type)
 
 
 

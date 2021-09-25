@@ -10,6 +10,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "首頁",
     component: Home,
   },
+  {
+    path: "/compression",
+    name: "壓縮",
+    component: import_vue("compression"),
+  },
   //
   {
     path: "/settings",

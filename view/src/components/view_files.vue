@@ -48,7 +48,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-const preview_length = localStorage.getItem("preview_length");
+const preview_length = localStorage.getItem(
+  "steam_design_tools$preview_length"
+);
 
 export default defineComponent({
   props: {
@@ -76,7 +78,10 @@ export default defineComponent({
   watch: {
     preview_size: {
       handler(val) {
-        localStorage.setItem("preview_length", val.toString());
+        localStorage.setItem(
+          "steam_design_tools$preview_length",
+          val.toString()
+        );
       },
       immediate: true,
     },

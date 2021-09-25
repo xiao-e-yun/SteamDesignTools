@@ -1,3 +1,4 @@
+import { hash as $hash } from "./utils"
 import { DataType } from "VS/protocol"
 import SocketServer = require('ws')
 
@@ -63,7 +64,7 @@ export default class {
 
     get<T extends keyof DataType>(key: T, data: DataType[T]["req"]): Promise<WebSocketEvent<T>["receiver"]>
     async get(key: string, data: any) {
-        const hash = this._hash()
+        const hash = $hash()
         const req = JSON.stringify({ key: key, data: data, type: "get", hash } as WebSocketEvent["sender"])
         this.ws.send(req)
         return new Promise((resolve, reject) => this._sync_list[hash] = resolve)
@@ -73,7 +74,6 @@ export default class {
     event: { [key: string]: (enevt: WebSocketEvent["sender"]) => any } = {}
     private _info = "|websocket|"
     private _sync_list: { [hash: string]: (req: WebSocketEvent["receiver"]) => void } = {}
-    private _hash() { let result = ''; const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; for (let i = 0; i < 12; i++)result += characters.charAt(Math.floor(Math.random() * 62)); return result }
 }
 
 interface WebSocketEvent<T extends keyof DataType = keyof DataType> {

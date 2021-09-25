@@ -102,7 +102,9 @@ export default defineComponent({
     },
   },
   async created() {
-    this.$ws.get("config", undefined).then((res) => (this.config = res.data));
+    this.$ws
+      .get("config", undefined)
+      .then((res) => (this.config = Object.assign(this.config, res.data)));
   },
 });
 </script>

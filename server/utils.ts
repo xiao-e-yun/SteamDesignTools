@@ -74,4 +74,6 @@ async function worker<T extends keyof WorkerDataType>
     return Promise.all(worker_threads)
 }
 
-export { config, path, worker }
+function hash(){ let result = ''; const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; for (let i = 0; i < 12; i++)result += characters.charAt(Math.floor(Math.random() * 62)); return result }
+
+export { config, path, worker, hash }

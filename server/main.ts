@@ -7,23 +7,11 @@ import { exec } from "child_process"
 
 // 監聽並回傳
 export default function (ws: _ws) {
-    ws.on("build", async ($data) => {
-        console.log("清空output")
-        const output = {
-            path: path("output"),
-            files: [] as string[],
-            wait: [] as Promise<void>[],
-        }
-        output.wait.push(
-            fs.readdir(output.path)
-                .then((files) => {
-                    for (const file of files) { output.wait.push(fs.unlink(path("output", file))) }
-                })
-                .catch(() => {
-                    output.wait.push(fs.mkdir(output.path))
-                })
-        )
+    ws.on("upload_config", async ($data) => config($data.data))
+    ws.on("config", async () => { return config() })
 
+    ws.on("build", async ($data) => {
+        const wait_clear = clear_output()
 
         console.log("設置構建")
         const data = $data.data
@@ -41,6 +29,10 @@ export default function (ws: _ws) {
                         return img
                     }).catch(() => {
                         console.warn("下載圖片失敗")
+                        ws.send("logger", {
+                            title: "下載圖片失敗",
+                            content: "請檢查網址是否正確",
+                        })
                         return false
                     })
                 })
@@ -76,7 +68,7 @@ export default function (ws: _ws) {
         }
 
         console.log("構建選項:", data.option)
-        await Promise.all(output.wait) //等待 output 刪除檔案
+        await wait_clear //等待 output 刪除檔案
         await worker("build", data.option, data.imgs.map(img => { return { name: img.name, base64img: img.data, } }))
 
         console.log("構建完成")
@@ -85,6 +77,37 @@ export default function (ws: _ws) {
         return true
     })
 
-    ws.on("upload_config", async ($data) => config($data.data))
-    ws.on("config", async () => { return config() })
+    ws.on("compression", async ($data) => {
+        const wait_clear = clear_output()
+        const data = $data.data
+
+        
+        console.log("壓縮選項:", data.option)
+        await wait_clear //等待 output 刪除檔案
+        await worker("compression", data.option, data.imgs)
+
+        console.log("壓縮完成")
+        exec(`start explorer "${path("output")}"`)
+
+        return true
+    })
+}
+
+function clear_output() {
+    console.log("清空output")
+    const output = {
+        path: path("output"),
+        files: [] as string[],
+        wait: [] as Promise<void>[],
+    }
+    output.wait.push(
+        fs.readdir(output.path)
+            .then((files) => {
+                for (const file of files) { output.wait.push(fs.unlink(path("output", file))) }
+            })
+            .catch(() => {
+                output.wait.push(fs.mkdir(output.path))
+            })
+    )
+    return Promise.all(output.wait)
 }

@@ -8,10 +8,7 @@ addEventListener("resize", () => window.resizeTo(1200, 600));
 window.resizeTo(1200, 600);
 
 const ws = (window.ws = new _ws());
-
-console.log("啟動GUI");
 const app = createApp(App);
-
 const app_prop = app.config.globalProperties;
 app_prop.$ws = ws;
 

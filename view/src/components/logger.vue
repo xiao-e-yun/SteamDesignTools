@@ -20,6 +20,11 @@ export default defineComponent({
       logger: toRef(useStore().state, "logger"),
     };
   },
+  created() {
+    this.$ws.on("logger", (log) => {
+      this.logger.push(log.data);
+    });
+  },
 });
 </script>
 

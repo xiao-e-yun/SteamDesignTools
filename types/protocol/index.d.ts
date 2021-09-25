@@ -5,8 +5,8 @@ export interface DataType
         req : {
             option:DataType["build"]["option"],
             imgs:{
-                name: string,
-                data: string,
+                name: string, // 圖片名稱
+                data: string, // 圖片base64
             }[]
         },
         option:{
@@ -20,6 +20,21 @@ export interface DataType
         },
         resolve:boolean,
     },
+    compression:{
+        req : {
+            option:DataType["compression"]["option"],
+            imgs:{
+                name: string, // 圖片名稱
+                data: string, // 圖片base64
+            }[]
+        },
+        option:{
+            quality:[number,number],
+            speed:number
+        },
+        resolve:boolean,
+    },
+    //
     config:{
         req:undefined,
         resolve:config
@@ -32,6 +47,13 @@ export interface DataType
         }[]
         resolve:void
     }
+    logger:{
+        req:{
+            title: string;
+            content: string;
+        },
+        resolve:void
+    }
 }
 
 export interface WorkerDataType
@@ -41,6 +63,13 @@ export interface WorkerDataType
         data:{
             name: string;
             base64img: string;
+        }[]
+    }
+    compression:{
+        option:DataType["compression"]["option"],
+        data:{
+            name: string;
+            data: string;
         }[]
     }
 }

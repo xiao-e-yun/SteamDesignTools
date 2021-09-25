@@ -103,7 +103,6 @@ export default defineComponent({
       };
     return {
       imgs: [] as { name: string; link_url: string; file: File }[],
-      dragenter: 0,
       show_build_type_list: false,
       edit_setting,
       build_type: [
@@ -135,7 +134,7 @@ export default defineComponent({
     get_bg_url(event: Event) {
       let url = (event.target as HTMLInputElement).value?.trim();
 
-      if (!/\.(gif|jpe?g|png)$/i.test(url) || url.indexOf("http") !== 0)
+      if (!/\.(jpe?g|png)$/i.test(url) || url.indexOf("http") !== 0)
         return (this.edit_setting.background.url = "");
 
       const index = url.indexOf("steam.design/#"); // length === 14
@@ -149,7 +148,7 @@ export default defineComponent({
       const files = Array.from($files); //轉換成陣列
       for (const file of files) {
         //驗證檔案類型
-        if (!/\.(gif|jpe?g|png)$/i.test(file.name)) {
+        if (!/\.(jpe?g|png)$/i.test(file.name)) {
           this.log(`錯誤類型`, "");
           return;
         }
