@@ -1,6 +1,6 @@
 import { workerData } from 'worker_threads'
 import { WorkerDataType } from 'VS/protocol'
-import { hash, path } from './utils'
+import { path } from './utils'
 import { extname, basename } from "path"
 import Jimp from 'jimp'
 import { exec as $exec } from 'child_process'
@@ -45,18 +45,25 @@ import { exec as $exec } from 'child_process'
         case "compression":{
             const { option:$option, data:$data } = worker_data as WorkerDataType["compression"]
             const pngquant = path("lib","pngquant.exe")
-            for (const data of $data) {                
-                const tmp = path("tmp","compression$" + data.name)
+            for (const data of $data) {         
                 const out = path("output",data.name )
 
-                let img:Jimp
-                if($option.base64) img = await decode_image(data.data).catch(e=>{throw e}) //base64
-                else img = await Jimp.read(data.data).catch(e=>{throw e}) // url
-                if(img.getMIME() === Jimp.MIME_JPEG){
-                    await img.quality($option.quality[1]).writeAsync(out)
+                if($option.base64) {
+                    const img = await decode_image(data.data).catch(e=>{throw e}) //base64
+                    if(img.getMIME() === Jimp.MIME_JPEG){
+                        await img.quality($option.quality[1]).writeAsync(out)
+                    }else if($option.base64){
+                        const tmp = path("tmp","compression$" + data.name)
+                        await img.writeAsync(tmp)
+                        await exec(tmp,out)
+                    }
                 }else{
-                    await img.writeAsync(tmp)
-                    await exec(tmp,out)
+                    const extension = extname(data.name)
+                    if(extension === ".png") await exec(data.data,out)
+                    else if(extension === ".jpg" || extension === ".jpeg"){
+                        const img = await Jimp.read(data.data).catch(e=>{throw e})
+                        await img.quality($option.quality[1]).writeAsync(out)
+                    }
                 }
             }
 

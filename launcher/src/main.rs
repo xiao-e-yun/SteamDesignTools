@@ -1,4 +1,4 @@
-// #![cfg_attr(not(debug_assertions),windows_subsystem = "windows")]
+#![cfg_attr(not(debug_assertions),windows_subsystem = "windows")]
 use std::{env, process::Command};
 use std::os::windows::process::CommandExt;
 use serde::{Deserialize, Serialize};
