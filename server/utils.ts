@@ -4,9 +4,9 @@ import Config from "VS/config";
 import { Worker } from 'worker_threads';
 import { WorkerDataType } from 'VS/Protocol';
 
-function path(path:"config"):string
+function path(path:"config"|"launch"):string
 function path(path:"root"|"tmp"|"server"|"www"|"lib"|"output",filename?:string):string
-function path(path: "server"|"www"|"lib"|"tmp"|"config"|"output"|"root", filename?: string): string {
+function path(path: "server"|"www"|"lib"|"tmp"|"config"|"output"|"root"|"launch", filename?: string): string {
     const snapshot_path = $path.join(__dirname, "..")
     const local_path = process.env.NODE_ENV === "development" ? snapshot_path : $path.dirname(process.execPath);
     return {
@@ -17,6 +17,7 @@ function path(path: "server"|"www"|"lib"|"tmp"|"config"|"output"|"root", filenam
         tmp: $path.join(local_path, "tmp", filename || ""),
         config: $path.join(local_path, "config.json"),
         root: $path.join(local_path, filename || ""),
+        launch: process.argv[3] || $path.join(local_path,"../dist/SteamDesignTools.exe"),
     }[path]
 }
 

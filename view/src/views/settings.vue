@@ -46,7 +46,6 @@
         />
       </div>
     </div>
-    <button class="save" @click="save">保存設置</button>
   </main>
 </template>
 
@@ -69,14 +68,20 @@ export default defineComponent({
         },
         {
           name: "關閉時刪除快取",
-          description: "軟體關閉時，清除快取的資料",
+          description: "軟體關閉時，清理快取的資料",
           key: "clear_tmp",
           type: "checkbox",
         },
         {
           name: "關閉時刪除輸出",
-          description: "軟體關閉時，清除輸出的資料夾",
+          description: "軟體關閉時，清理輸出的資料夾",
           key: "clear_output",
+          type: "checkbox",
+        },
+        {
+          name: "使用前刪除輸出",
+          description: "建構或壓縮前，清理輸出的資料夾",
+          key: "before_clear_output",
           type: "checkbox",
         },
       ] as {
@@ -89,16 +94,24 @@ export default defineComponent({
       }[],
       config: {
         thread_count: 5,
+        clear_output: false,
+        clear_tmp: false,
+        before_clear_output: true,
       } as Config,
     };
   },
-  methods: {
-    save() {
-      const save = [];
-      for (const [key, val] of Object.entries(this.config)) {
-        save.push({ key, val });
-      }
-      this.$ws.send("upload_config", save as DataType["upload_config"]["req"]);
+  watch: {
+    config: {
+      handler() {
+        const save = [];
+        for (const [key, val] of Object.entries(this.config))
+          save.push({ key, val });
+        this.$ws.send(
+          "upload_config",
+          save as DataType["upload_config"]["req"]
+        );
+      },
+      deep: true,
     },
   },
   async created() {

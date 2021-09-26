@@ -22,7 +22,7 @@
         v-for="(img, index) in show_imgs ? imgs : preview"
         :key="index"
         :title="img.name"
-        :src="img.link_url"
+        :src="base64 ? img.path : encodeURI('/img?path=' + img.path)"
         @click="fullscreen_view = img"
       />
       <h2
@@ -40,7 +40,14 @@
         v-if="fullscreen_view"
         @click="fullscreen_view = false"
       >
-        <img :title="fullscreen_view.name" :src="fullscreen_view.link_url" />
+        <img
+          :title="fullscreen_view.name"
+          :src="
+            base64
+              ? fullscreen_view.path
+              : encodeURI('/img?path=' + fullscreen_view.path)
+          "
+        />
       </main>
     </transition>
   </div>
@@ -56,6 +63,10 @@ export default defineComponent({
   props: {
     imgs: {
       type: Array,
+      required: true,
+    },
+    base64: {
+      type: Boolean,
       required: true,
     },
   },

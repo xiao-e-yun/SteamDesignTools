@@ -6,10 +6,11 @@ export interface DataType
             option:DataType["build"]["option"],
             imgs:{
                 name: string, // 圖片名稱
-                data: string, // 圖片base64
+                data: string, // 圖片base64 或 路徑
             }[]
         },
         option:{
+            base64:boolean, // data使用base64
             main:number, // 類型
             size:number, // 個人檔案大小 (width/px)
             auto_cut:boolean, // 自動切割
@@ -26,16 +27,21 @@ export interface DataType
             option:DataType["compression"]["option"],
             imgs:{
                 name: string, // 圖片名稱
-                data: string, // 圖片base64
+                data: string, // 圖片base64 或 路徑
             }[]
         },
         option:{
+            base64:boolean, // data使用base64
             quality:[number,number],
             speed:number
         },
         resolve:boolean,
     },
     //
+    get_file:{
+        req : undefined,
+        resolve:string[],
+    }
     config:{
         req:undefined,
         resolve:config
@@ -63,7 +69,7 @@ export interface WorkerDataType
         option:DataType["build"]["option"],
         data:{
             name: string;
-            base64img: string;
+            data: string;
         }[]
     }
     compression:{

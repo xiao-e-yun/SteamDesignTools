@@ -4,7 +4,11 @@
       <transition name="fade" mode="out-in">
         <ChooseFiles v-if="imgs.length === 0" @files="upload" />
         <div v-else class="preview_and_setting">
-          <ViewFiles :imgs="imgs" @re_choose="re_choose" />
+          <ViewFiles
+            :base64="edit_setting.base64"
+            :imgs="imgs"
+            @re_choose="re_choose"
+          />
           <div class="edit_setting">
             <h2 class="select_compression_type">壓縮圖片</h2>
             <div class="select_compression_list">
@@ -150,12 +154,13 @@ export default defineComponent({
       edit_setting = JSON.parse(save);
     } else {
       edit_setting = {
+        base64: false,
         quality: [60, 100],
         speed: 1,
       };
     }
     return {
-      imgs: [] as { name: string; link_url: string; file: File }[],
+      imgs: [] as { name: string; path: string; file?: File }[],
       edit_setting,
     };
   },
@@ -173,19 +178,30 @@ export default defineComponent({
   },
 
   methods: {
-    upload($files: FileList): void {
-      const imgs = [] as { name: string; link_url: string; file: File }[];
-      const files = Array.from($files); //轉換成陣列
-      for (const file of files) {
-        //驗證檔案類型
-        if (!/\.(jpe?g|png)$/i.test(file.name)) {
-          this.log(`錯誤類型`, "");
-          return;
+    upload(upload: { files: FileList | string[]; use_base64: boolean }): void {
+      const imgs = [] as { name: string; path: string; file?: File }[];
+      this.edit_setting.base64 = upload.use_base64;
+      if (upload.use_base64) {
+        const files = Array.from(upload.files as FileList); //轉換成陣列
+        for (const file of files) {
+          //驗證檔案類型
+          if (!/\.(jpe?g|png)$/i.test(file.name)) {
+            this.log(`錯誤類型`, "");
+            return;
+          }
+          const name = file.name;
+          const path = URL.createObjectURL(file);
+          imgs.push({ name, path, file });
         }
-        const name = file.name;
-        const link_url = URL.createObjectURL(file);
-        imgs.push({ name, link_url, file });
+      } else {
+        for (const path of upload.files as string[]) {
+          imgs.push({
+            name: path.split("\\").pop() || "",
+            path,
+          });
+        }
       }
+
       this.imgs = imgs.sort((a, b) => {
         return a.name.localeCompare(b.name);
       });
@@ -200,12 +216,22 @@ export default defineComponent({
       this.loading(true);
       const reader = new FileReader();
       const imgs = [] as DataType["compression"]["req"]["imgs"];
-      for (const img of this.imgs) {
-        const data = (await read_img(img.file)) as string;
-        imgs.push({
-          name: img.name,
-          data,
-        });
+
+      if (this.edit_setting.base64) {
+        for (const img of this.imgs) {
+          const data = (await read_img(img.file as File)) as string;
+          imgs.push({
+            name: img.name,
+            data,
+          });
+        }
+      } else {
+        for (const img of this.imgs) {
+          imgs.push({
+            name: img.name,
+            data: img.path,
+          });
+        }
       }
 
       const option = this.edit_setting;

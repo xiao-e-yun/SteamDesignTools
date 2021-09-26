@@ -9,6 +9,10 @@ import { exec } from "child_process"
 export default function (ws: _ws) {
     ws.on("upload_config", async ($data) => config($data.data))
     ws.on("config", async () => { return config() })
+    ws.on("get_file",() => {
+        return new Promise((resolve) => exec(`${path("launch")} choose_image`,
+        (e, stdout) => resolve(JSON.parse(stdout))))
+    })
 
     ws.on("build", async ($data) => {
         const wait_clear = clear_output()
@@ -69,7 +73,7 @@ export default function (ws: _ws) {
 
         console.log("構建選項:", data.option)
         await wait_clear //等待 output 刪除檔案
-        await worker("build", data.option, data.imgs.map(img => { return { name: img.name, base64img: img.data, } }))
+        await worker("build", data.option, data.imgs.map(img => { return { name: img.name, data: img.data, } }))
 
         console.log("構建完成")
         exec(`start explorer "${path("output")}"`)
@@ -93,7 +97,8 @@ export default function (ws: _ws) {
     })
 }
 
-function clear_output() {
+async function clear_output() {
+    if (await config("before_clear_output") === false) return
     console.log("清空output")
     const output = {
         path: path("output"),

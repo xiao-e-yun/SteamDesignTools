@@ -1,6 +1,6 @@
 <template>
   <div
-    @click="this.$refs.input.click"
+    @click="file_choose"
     @drop="drag_file"
     @dragenter="drop_inout"
     @dragleave="drop_inout"
@@ -9,14 +9,7 @@
     class="drop_here"
     :class="{ dropping: dragenter !== 0 }"
   >
-    <h1>選擇圖片</h1>
-    <input
-      type="file"
-      @change="file_change"
-      multiple="multiple"
-      accept=".gif,.jpg,.png"
-      ref="input"
-    />
+    <h1>選擇或丟入圖片</h1>
   </div>
 </template>
 
@@ -33,7 +26,7 @@ export default defineComponent({
       e.preventDefault();
       this.dragenter = 0;
       const files = (e.dataTransfer as DataTransfer).files;
-      if (files.length > 0) this.upload(files);
+      if (files.length > 0) this.upload(files, true);
       else this.log("無檔案檔案", "無法讀取到丟入的檔案");
     },
     //拖曳檔案中
@@ -41,14 +34,13 @@ export default defineComponent({
       if (e.type == "dragenter") this.dragenter++;
       else this.dragenter--;
     },
-    file_change(e: InputEvent) {
-      const input = e.target as HTMLInputElement;
-      this.upload(input.files as FileList);
-      input.value = "";
+    async file_choose() {
+      const files_path = (await this.$ws.get("get_file", undefined)).data;
+      if (files_path.length > 0) this.upload(files_path, false);
     },
     //通知父層
-    upload(files: FileList) {
-      this.$emit("files", files);
+    upload(files: FileList | string[], use_base64: boolean) {
+      this.$emit("files", { files, use_base64 });
     },
   },
   data() {

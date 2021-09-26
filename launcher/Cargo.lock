@@ -333,6 +333,7 @@ checksum = "b71991ff56294aa922b450139ee08b3bfc70982c6b2c7562771375cf73542dd4"
 name = "launcher"
 version = "0.1.0"
 dependencies = [
+ "nfd2",
  "notify-rust",
  "serde",
  "serde_json",
@@ -395,6 +396,15 @@ checksum = "b1bb540dc6ef51cfe1916ec038ce7a620daf3a111e2502d745197cd53d6bca15"
 dependencies = [
  "libc",
  "socket2",
+]
+
+[[package]]
+name = "nfd2"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "306127f5ff8cb7c8cd3a8cf0fc162f4dc76ed589efa01ee84eb5593e7be97f75"
+dependencies = [
+ "cc",
 ]
 
 [[package]]

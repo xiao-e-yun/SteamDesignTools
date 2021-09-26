@@ -12,7 +12,9 @@ import { exec as $exec } from 'child_process'
         case "build":{
             const { option:$option, data:$data } = worker_data as WorkerDataType[typeof $type]
             for (const data of $data) {                
-                let img = await decode_image(data.base64img).catch(e=>{throw e})
+                let img:Jimp
+                if($option.base64) img = await decode_image(data.data).catch(e=>{throw e}) //base64
+                else img = await Jimp.read(data.data).catch(e=>{throw e}) // url
                 img.resize($option.size,Jimp.AUTO)
                 if($option.background.buffer){ //有背景
                     const burff = Buffer.from($option.background.buffer as Uint8Array)
@@ -47,7 +49,9 @@ import { exec as $exec } from 'child_process'
                 const tmp = path("tmp","compression$" + data.name)
                 const out = path("output",data.name )
 
-                const img = await decode_image(data.data).catch(e=>{throw e})
+                let img:Jimp
+                if($option.base64) img = await decode_image(data.data).catch(e=>{throw e}) //base64
+                else img = await Jimp.read(data.data).catch(e=>{throw e}) // url
                 if(img.getMIME() === Jimp.MIME_JPEG){
                     await img.quality($option.quality[1]).writeAsync(out)
                 }else{
@@ -61,7 +65,6 @@ import { exec as $exec } from 'child_process'
                 const speed = $option.speed
                 return new Promise(resolve=>{
                     const cmd = `\"${pngquant}\" --quality ${quality} --speed ${speed} - < \"${tmp_path}\" > \"${output_path}\"`
-                    console.log(cmd)
                     $exec(cmd,{ encoding: 'utf8' },
                     (e,s,stderr)=>{
                         if(e) console.error(e,stderr)

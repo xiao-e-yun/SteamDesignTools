@@ -72,6 +72,12 @@ import main from './main'
 
     app.use(express.static(utils.path('www')))
     app.get('*', function (req, res) {
-        res.sendFile(utils.path('www','index.html'));
+        const get_path = req.query.path
+        if(get_path){
+            const path = decodeURI(get_path as string)
+            res.sendFile(path)
+        }else{
+            res.sendFile(utils.path('www','index.html'));
+        }
     });
 })()
