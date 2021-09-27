@@ -137,7 +137,7 @@ import { defineComponent } from "vue";
 import ChooseFiles from "@/components/choose_files.vue";
 import ViewFiles from "@/components/view_files.vue";
 import { mixin } from "@/store";
-import { DataType } from "VS/protocol";
+import DataType from "VS/protocol";
 
 export default defineComponent({
   components: {

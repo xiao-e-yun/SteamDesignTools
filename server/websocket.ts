@@ -1,5 +1,5 @@
 import { hash as $hash } from "./utils"
-import { DataType } from "VS/protocol"
+import DataType from "VS/protocol"
 import SocketServer = require('ws')
 
 export default class {

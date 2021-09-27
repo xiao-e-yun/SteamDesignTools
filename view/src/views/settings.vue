@@ -51,7 +51,7 @@
 
 <script lang="ts">
 import Config from "VS/config";
-import { DataType } from "VS/protocol";
+import DataType from "VS/protocol";
 import { defineComponent } from "vue";
 
 export default defineComponent({

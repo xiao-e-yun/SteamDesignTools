@@ -8,9 +8,11 @@ import { exec as $exec } from 'child_process'
 // 多線程運算
 (async($type:keyof WorkerDataType)=>{
     const worker_data = workerData.data as unknown
+    type SwitchDataType<T extends typeof $type = typeof $type> = WorkerDataType[T]["worker"]
+    
     switch ($type) {
         case "build":{
-            const { option:$option, data:$data } = worker_data as WorkerDataType[typeof $type]
+            const { option:$option, data:$data } = worker_data as SwitchDataType<typeof $type>
             for (const data of $data) {                
                 let img:Jimp
                 if($option.base64) img = await decode_image(data.data).catch(e=>{throw e}) //base64
@@ -43,7 +45,7 @@ import { exec as $exec } from 'child_process'
             break;
         }
         case "compression":{
-            const { option:$option, data:$data } = worker_data as WorkerDataType["compression"]
+            const { option:$option, data:$data } = worker_data as SwitchDataType<typeof $type>
             const pngquant = path("lib","pngquant.exe")
             for (const data of $data) {         
                 const out = path("output",data.name )

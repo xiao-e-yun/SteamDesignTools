@@ -2,7 +2,8 @@ import $path from 'path';
 import { promises as fs } from 'fs';
 import Config from "VS/config";
 import { Worker } from 'worker_threads';
-import { WorkerDataType } from 'VS/Protocol';
+import DataType from 'VS/Protocol';
+import { FilterKeysToObject } from 'VS/utils';
 
 function path(path:"config"|"launch"):string
 function path(path:"root"|"tmp"|"server"|"www"|"lib"|"output",filename?:string):string
@@ -52,8 +53,8 @@ async function config<Key extends keyof Config>
     }
 }
 
-async function worker<T extends keyof WorkerDataType>
-(type: T, option:WorkerDataType[T]["option"] , data: WorkerDataType[T]["data"]) {
+async function worker<T extends keyof FilterKeysToObject<DataType,{worker:{option:any,data:any[]}}>>
+(type: T, option: DataType[T]["worker"]["option"] , data: DataType[T]["worker"]["data"]) {
     let thread_count = (await config()).thread_count || 5
 
     console.log("多線程處理:" + data.length + "\n允許線程數:" + thread_count)

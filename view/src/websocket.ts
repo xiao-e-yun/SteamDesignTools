@@ -1,6 +1,6 @@
 /* eslint-disable  @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-import { DataType } from "VS/protocol";
+import DataType from "VS/protocol";
 export default class {
   constructor() {
     this.ws = new WebSocket("ws://localhost:" + location.port);

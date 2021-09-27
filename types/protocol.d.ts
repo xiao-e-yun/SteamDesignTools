@@ -1,5 +1,7 @@
-import config from "../config"
-export interface DataType
+import config from "./config"
+import { FilterKeysToObject } from "./utils"
+
+export default interface DataType
 <Iconfig extends keyof config = keyof config>{
     build:{
         req : {
@@ -20,8 +22,16 @@ export interface DataType
                 url:string, //取得圖片 
             },
         },
+        worker:{
+            option:DataType["build"]["option"],
+            data:{
+                name: string;
+                data: string;
+            }[]
+        }
         resolve:boolean,
     },
+    
     compression:{
         req : {
             option:DataType["compression"]["option"],
@@ -35,6 +45,13 @@ export interface DataType
             quality:[number,number],
             speed:number
         },
+        worker:{
+            option:DataType["compression"]["option"],
+            data:{
+                name: string;
+                data: string;
+            }[]
+        }
         resolve:boolean,
     },
     //
@@ -63,20 +80,4 @@ export interface DataType
     }
 }
 
-export interface WorkerDataType
-{
-    build:{
-        option:DataType["build"]["option"],
-        data:{
-            name: string;
-            data: string;
-        }[]
-    }
-    compression:{
-        option:DataType["compression"]["option"],
-        data:{
-            name: string;
-            data: string;
-        }[]
-    }
-}
+export type WorkerDataType = FilterKeysToObject<DataType,{worker:{option:any,data:any[]}}>
