@@ -25,7 +25,8 @@ export default defineComponent({
       e.stopPropagation();
       e.preventDefault();
       this.dragenter = 0;
-      const files = (e.dataTransfer as DataTransfer).files;
+      const $files = (e.dataTransfer as DataTransfer).files;
+      const files = Array.from($files).filter((file) => file.size !== 0);
       if (files.length > 0) this.upload(files, true);
       else this.log("無檔案檔案", "無法讀取到丟入的檔案");
     },
@@ -39,7 +40,7 @@ export default defineComponent({
       if (files_path.length > 0) this.upload(files_path, false);
     },
     //通知父層
-    upload(files: FileList | string[], use_base64: boolean) {
+    upload(files: (File | string)[], use_base64: boolean) {
       this.$emit("files", { files, use_base64 });
     },
   },
