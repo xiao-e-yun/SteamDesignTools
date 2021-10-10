@@ -1,5 +1,5 @@
-# created by virtualenv automatically
 node_modules
+yarn.lock
 .vscode
 build
 dist

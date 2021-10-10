@@ -68,6 +68,17 @@ export default function (ws: _ws) {
                     bg.buffer = await cut_bg.getBufferAsync(cut_bg.getMIME())
                     break
                 }
+                case 2: {//工作坊展示欄
+                    // width 1920 height any
+                    // cut x 489 y 380 
+                    // cut w 628 h any - 380
+                    // cut main 630
+                    const bg_hight = image.bitmap.height
+                    const cut_bg = await Jimp.read(628, bg_hight - 380)
+                    cut_bg.composite(image, -489, -380)
+                    bg.buffer = await cut_bg.getBufferAsync(cut_bg.getMIME())
+                    break
+                }
             }
         }
 

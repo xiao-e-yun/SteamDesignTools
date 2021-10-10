@@ -61,7 +61,7 @@
 
               <p
                 class="checkbox"
-                v-if="edit_setting.main === 0"
+                v-if="edit_setting.main === 0 || edit_setting.main === 2"
                 @click="edit_setting.auto_cut = !edit_setting.auto_cut"
                 :data-checked="edit_setting.auto_cut"
               >
@@ -130,6 +130,10 @@ export default defineComponent({
         {
           name: "精選藝術作品展示欄",
           size: 630,
+        },
+        {
+          name: "工作坊展示欄",
+          size: 628,
         },
       ],
     };
