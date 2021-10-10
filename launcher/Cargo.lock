@@ -118,6 +118,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "cluFlock"
+version = "1.2.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dc9a586f6ea37daf0f6154727023de0a52342bb84cf692451f09b2690e1034be"
+dependencies = [
+ "libc",
+ "winapi",
+]
+
+[[package]]
 name = "concurrent-queue"
 version = "1.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -333,6 +343,7 @@ checksum = "b71991ff56294aa922b450139ee08b3bfc70982c6b2c7562771375cf73542dd4"
 name = "launcher"
 version = "0.1.0"
 dependencies = [
+ "cluFlock",
  "nfd2",
  "notify-rust",
  "serde",

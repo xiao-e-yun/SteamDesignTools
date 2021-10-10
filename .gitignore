@@ -3,3 +3,4 @@ yarn.lock
 .vscode
 build
 dist
+Cargo.lock

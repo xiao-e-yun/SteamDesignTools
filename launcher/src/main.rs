@@ -3,6 +3,7 @@ use std::{env, process::Command};
 use std::os::windows::process::CommandExt;
 use serde::{Deserialize, Serialize};
 use notify_rust::Notification;
+use cluFlock::{ExclusiveFlock, ToFlock};
 use std::path::Path;
 use nfd2::Response;
 use serde_json;
@@ -58,10 +59,15 @@ fn main() {
 
     //運行軟體
     if cfg!(target_os = "windows") {
+        let file_lock = std::fs::File::create(".LOCK").unwrap().try_lock();
+        match file_lock {
+            Ok(_) => print!("lock"),
+            Err(_) => panic!("is locked"),
+        }
         const CREATE_NO_WINDOW: u32 = 0x08000000;
         let mut open_core = Command::new("core.exe");
-        let log = open_core.args(["run",&args[0]]).creation_flags(CREATE_NO_WINDOW).output().expect("can't open core");
-        println!("{}", String::from_utf8_lossy(&log.stdout));
+        open_core.args(["run",&args[0]]).creation_flags(CREATE_NO_WINDOW).output().expect("can't open core");
+        drop(file_lock)
     }
 
     //如果設定有，刪除暫存檔
