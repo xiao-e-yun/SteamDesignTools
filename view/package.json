@@ -10,6 +10,7 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "jsx": "^0.9.89",
+    "typescript": "^4.4.3",
     "vue": "^3.2.12",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"
