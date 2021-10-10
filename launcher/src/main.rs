@@ -3,7 +3,7 @@ use std::{env, process::Command};
 use std::os::windows::process::CommandExt;
 use serde::{Deserialize, Serialize};
 use notify_rust::Notification;
-use cluFlock::{ExclusiveFlock, ToFlock};
+use cluFlock::ExclusiveFlock;
 use std::path::Path;
 use nfd2::Response;
 use serde_json;
@@ -61,7 +61,7 @@ fn main() {
     if cfg!(target_os = "windows") {
         let file_lock = std::fs::File::create(".LOCK").unwrap().try_lock();
         match file_lock {
-            Ok(_) => print!("lock"),
+            Ok(_) => print!("locked"),
             Err(_) => panic!("is locked"),
         }
         const CREATE_NO_WINDOW: u32 = 0x08000000;
