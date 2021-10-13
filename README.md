@@ -1,6 +1,6 @@
 # SteamDesignTools
 快速建立Steam個人檔案藝術作品  
-[如何在Github下載](https://i.imgur.com/JUndWFn.gif)  
+[如何在Github下載並啟動](https://i.imgur.com/JUndWFn.gif)  
 
 ## 如何使用
 ![縮圖](https://i.imgur.com/QbqeH11.gif)  
