@@ -3,11 +3,11 @@
 [如何在Github下載並啟動](https://i.imgur.com/JUndWFn.gif)  
 
 ## 如何使用
-1.丟入或選擇圖片  
-2.輸出設置
+1. 丟入或選擇圖片  
+2. 輸出設置
  + 輸出類型
  + 詳細設置
-3.開始建構  
+3. 開始建構  
 ![縮圖](https://i.imgur.com/QbqeH11.gif)  
 
 ## 建議搭配
