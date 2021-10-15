@@ -3,7 +3,7 @@
 
 ## 如何使用
 0. 下載並啟動  
-![如何在Github下載並啟動](https://i.imgur.com/JUndWFn.gif)  
+![如何在 Github 下載並啟動](https://i.imgur.com/JUndWFn.gif)  
 1. 丟入或選擇圖片
 2. 輸出設置  
   |-輸出類型  
@@ -12,7 +12,7 @@
 ![縮圖](https://i.imgur.com/QbqeH11.gif)  
 
 ## 建議搭配
- - [Steam一鍵上傳 Chrome 插件](https://chrome.google.com/webstore/detail/steam-profile-assistant/mjmabgdoainclinjecbkdancpamdiaih)  
+ - [Steam 一鍵上傳 Chrome 插件](https://chrome.google.com/webstore/detail/steam-profile-assistant/mjmabgdoainclinjecbkdancpamdiaih)  
  - [上傳 藝術作品/螢幕截圖/工作坊/指南](https://steamcommunity.com/sharedfiles/filedetails/?id=1880720456)  
  - [查詢個人檔案背景圖片](https://steam.design)  
  
