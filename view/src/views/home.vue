@@ -1,104 +1,93 @@
 <template>
   <main>
-    <div class="img_editor">
-      <transition name="fade" mode="out-in">
-        <ChooseFiles v-if="imgs.length === 0" @files="upload" />
-        <div v-else class="preview_and_setting">
-          <ViewFiles
-            :base64="edit_setting.base64"
-            :imgs="imgs"
-            @re_choose="re_choose"
+    <FilesManage
+      @base64="(i) => (edit_setting.base64 = i)"
+      @imgs="(i) => (imgs = i)"
+    >
+      <template v-slot:type>
+        <h2
+          v-text="build_type[edit_setting.main].name"
+          @click="show_type_list = !show_type_list"
+        />
+        <transition name="fade">
+          <div
+            class="type_list"
+            v-if="show_type_list"
+            @click="show_type_list = false"
+            @mouseleave="show_type_list = false"
+          >
+            <button
+              v-for="(data, index) in build_type"
+              v-text="data.name"
+              @click="
+                edit_setting.main = index;
+                edit_setting.size = data.size;
+              "
+              :key="index"
+            />
+          </div>
+        </transition>
+      </template>
+
+      <template v-slot:list>
+        <div class="setting_background">
+          <img
+            v-if="edit_setting.background.url !== ''"
+            :src="edit_setting.background.url"
+            alt="這個網址不可用"
           />
-          <div class="edit_setting">
-            <div class="select_build_type">
-              <h2
-                v-text="build_type[edit_setting.main].name"
-                @click="show_build_type_list = !show_build_type_list"
-              />
-              <transition name="fade">
-                <div
-                  class="build_type_list"
-                  v-if="show_build_type_list"
-                  @click="show_build_type_list = false"
-                  @mouseleave="show_build_type_list = false"
-                >
-                  <button
-                    v-for="(data, index) in build_type"
-                    v-text="data.name"
-                    @click="
-                      edit_setting.main = index;
-                      edit_setting.size = data.size;
-                    "
-                    :key="index"
-                  />
-                </div>
-              </transition>
-            </div>
-            <div class="select_build_list">
-              <div class="setting_background">
-                <img
-                  v-if="edit_setting.background.url !== ''"
-                  :src="edit_setting.background.url"
-                  alt="這個網址不可用"
-                />
-                <div>
-                  <input
-                    @input="get_bg_url"
-                    :value="this.edit_setting.background.url"
-                    type="text"
-                    placeholder="背景網址"
-                  /><br />
-                  支持
-                  <a
-                    href="https://steam.design/"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    >Steam.Design</a
-                  >
-                  ，直接複製網址。
-                </div>
-              </div>
-
-              <p
-                class="checkbox"
-                v-if="edit_setting.main === 0 || edit_setting.main === 2"
-                @click="edit_setting.auto_cut = !edit_setting.auto_cut"
-                :data-checked="edit_setting.auto_cut"
-              >
-                自動切割
-              </p>
-              <p
-                class="checkbox"
-                v-if="edit_setting.main === 0 && edit_setting.auto_cut"
-                @click="
-                  edit_setting.right_more_img_clip =
-                    !edit_setting.right_more_img_clip
-                "
-                :data-checked="edit_setting.right_more_img_clip"
-              >
-                裁減更多圖片
-              </p>
-
-              <button @click="build">開始構建</button>
-            </div>
+          <div>
+            <input
+              @input="get_bg_url"
+              :value="this.edit_setting.background.url"
+              type="text"
+              placeholder="背景網址"
+            /><br />
+            支持
+            <a
+              href="https://steam.design/"
+              target="_blank"
+              rel="noreferrer noopener"
+              >Steam.Design</a
+            >
+            ，直接複製網址。
           </div>
         </div>
-      </transition>
-    </div>
+
+        <p
+          class="checkbox"
+          v-if="edit_setting.main === 0 || edit_setting.main === 2"
+          @click="edit_setting.auto_cut = !edit_setting.auto_cut"
+          :data-checked="edit_setting.auto_cut"
+        >
+          自動切割
+        </p>
+        <p
+          class="checkbox"
+          v-if="edit_setting.main === 0 && edit_setting.auto_cut"
+          @click="
+            edit_setting.right_more_img_clip = !edit_setting.right_more_img_clip
+          "
+          :data-checked="edit_setting.right_more_img_clip"
+        >
+          裁減更多圖片
+        </p>
+
+        <button @click="build">開始構建</button>
+      </template>
+    </FilesManage>
   </main>
 </template>
 
-<script lang="tsx">
+<script lang="ts">
 import { defineComponent } from "vue";
-import ChooseFiles from "@/components/choose_files.vue";
-import ViewFiles from "@/components/view_files.vue";
+import FilesManage from "@/components/files_manage.vue";
 import { mixin } from "@/store";
 import DataType from "VS/protocol";
 
 export default defineComponent({
   components: {
-    ChooseFiles,
-    ViewFiles,
+    FilesManage,
   },
 
   mixins: [mixin],
@@ -106,21 +95,21 @@ export default defineComponent({
   data() {
     let edit_setting: DataType["build"]["req"]["option"];
     const save = localStorage.getItem("steam_design_tools$build_setting");
-    if (save) edit_setting = JSON.parse(save);
-    else
-      edit_setting = {
-        base64: false,
-        main: 0,
-        size: 615,
-        auto_cut: true,
-        right_more_img_clip: true,
-        background: {
-          url: "",
-        },
-      };
+    edit_setting = save
+      ? JSON.parse(save)
+      : {
+          base64: false,
+          main: 0,
+          size: 615,
+          auto_cut: true,
+          right_more_img_clip: true,
+          background: {
+            url: "",
+          },
+        };
     return {
       imgs: [] as { name: string; path: string; file?: File }[],
-      show_build_type_list: false,
+      show_type_list: false,
       edit_setting,
       build_type: [
         {
@@ -164,45 +153,12 @@ export default defineComponent({
       this.edit_setting.background.url = url;
     },
 
-    upload(upload: { files: FileList | string[]; use_base64: boolean }): void {
-      const imgs = [] as { name: string; path: string; file?: File }[];
-      this.edit_setting.base64 = upload.use_base64;
-      if (upload.use_base64) {
-        const files = Array.from(upload.files as FileList); //轉換成陣列
-        for (const file of files) {
-          //驗證檔案類型
-          if (!/\.(jpe?g|png)$/i.test(file.name)) {
-            this.log(`錯誤類型`, "");
-            return;
-          }
-          const name = file.name;
-          const path = URL.createObjectURL(file);
-          imgs.push({ name, path, file });
-        }
-      } else {
-        for (const path of upload.files as string[]) {
-          imgs.push({
-            name: path.split("\\").pop() || "",
-            path,
-          });
-        }
-      }
-
-      this.imgs = imgs.sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
-      console.log("加載完成");
-    },
-
-    re_choose(): void {
-      this.imgs = [];
-    },
-
     async build(): Promise<void> {
       this.loading(true);
       const reader = new FileReader();
       const imgs = [] as DataType["build"]["req"]["imgs"];
 
+      console.log(this.imgs);
       if (this.edit_setting.base64) {
         for (const img of this.imgs) {
           const data = (await read_img(img.file as File)) as string;
@@ -235,66 +191,39 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
-@import "../app.scss";
-.img_editor {
-  width: 100%;
-  .preview_and_setting {
-    display: flex;
-    & > div {
-      background: $side-3;
-    }
-    .edit_setting {
-      max-width: 30%;
-    }
-  }
-}
-
-.select_build_type {
-  position: relative;
-  & > h2 {
-    font-weight: 800;
-    color: $main;
-    background-color: $side-2;
-    padding-right: 2em;
-    margin: 0;
-    min-width: 20%;
-    padding: 0.1em 4em 0.1em 0.2em;
-    word-break: keep-all;
-    border-bottom: $border;
-    cursor: pointer;
+<style lang="scss" scoped>
+@import "@/app.scss";
+.files_manage {
+  .setting_type {
     &:hover {
       color: $bg;
       background-color: $main;
     }
-  }
-  & > .build_type_list {
-    position: absolute;
-    top: 100%;
-    width: calc(100% - 0.2em);
-    margin: 0.2em;
-    background-color: $side-3;
-    border: $border;
-    & > button {
-      font-size: 1em;
-      font-weight: 800;
-      padding: 0.2em 0;
-      width: 100%;
-      text-align: center;
-      color: $main;
-      background-color: transparent;
-      border: none;
-      &:hover {
-        background-color: $main;
-        color: $bg;
+    & > .type_list {
+      position: absolute;
+      top: 100%;
+      width: calc(100% - 0.2em);
+      margin: 0.2em;
+      background-color: $side-3;
+      border: $border;
+      & > button {
+        font-size: 1em;
+        font-weight: 800;
+        padding: 0.2em 0;
+        width: 100%;
+        text-align: center;
+        color: $main;
+        background-color: transparent;
+        border: none;
+        &:hover {
+          background-color: $main;
+          color: $bg;
+        }
       }
     }
   }
-}
 
-.select_build_list {
-  margin: 4%;
-  & > .setting_background {
+  .setting_list > .setting_background {
     overflow: hidden;
     background-color: $main;
     & > img,
@@ -332,40 +261,6 @@ export default defineComponent({
           color: $bg;
         }
       }
-    }
-  }
-
-  & > p {
-    &.checkbox {
-      display: flex;
-      align-items: center;
-      &::before {
-        content: "";
-        width: 0.8em;
-        height: 0.8em;
-        margin: 0.2em;
-        border: $border;
-        background-color: $side-3;
-        transition: background-color 0.1s;
-        cursor: pointer;
-      }
-      &[data-checked="true"]::before {
-        background-color: $main;
-      }
-    }
-  }
-
-  & > button {
-    width: 100%;
-    font-size: 1.6em;
-    margin-top: 0.6em;
-    background-color: $side-2;
-    border: none;
-    color: $main;
-    cursor: pointer;
-    transition: background-color 0.16s;
-    &:hover {
-      background-color: $bg;
     }
   }
 }

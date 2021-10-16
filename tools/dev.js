@@ -11,7 +11,7 @@ const fs = require('fs').promises;
 	exec(`tsc -w"`,{cwd:'./server'},(err,stdout,stderr)=>console.log(err,stdout,stderr))
 	
 	console.log("監聽view");
-	exec(`npx vue-cli-service build --dest ../build/www --target app --watch --modern --mode development --fix`,{cwd:"./view"},(err,stdout,stderr)=>console.log(err,stdout,stderr))
+	exec(`npx vue-cli-service build --dest ../build/www --target app --watch --mode development`,{cwd:"./view"},(err,stdout,stderr)=>console.log(err,stdout,stderr))
 	
 	console.log('監聽lib')
 	const watcher = chokidar.watch(`./lib`)

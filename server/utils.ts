@@ -4,6 +4,8 @@ import Config from "VS/config";
 import { Worker } from 'worker_threads';
 import DataType from 'VS/Protocol';
 import { FilterKeysToObject } from 'VS/utils';
+import puppeteer from 'puppeteer-core';
+import { getEdgePath } from 'edge-paths';
 
 function path(path:"config"|"launch"):string
 function path(path:"root"|"tmp"|"server"|"www"|"lib"|"output",filename?:string):string
@@ -76,6 +78,14 @@ async function worker<T extends keyof FilterKeysToObject<DataType,{worker:{optio
     return Promise.all(worker_threads)
 }
 
+function create_browser(options?:puppeteer.LaunchOptions & puppeteer.BrowserLaunchArgumentOptions & puppeteer.BrowserConnectOptions){
+    const opt = {
+        executablePath:getEdgePath(),
+        ...options||{}
+    }
+    return puppeteer.launch(opt)
+}
+
 function hash(){ let result = ''; const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; for (let i = 0; i < 12; i++)result += characters.charAt(Math.floor(Math.random() * 62)); return result }
 
-export { config, path, worker, hash }
+export { config, path, worker, hash, create_browser }

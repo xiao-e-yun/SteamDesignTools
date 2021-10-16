@@ -122,11 +122,8 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
-@import "../app.scss";
-#main {
-  justify-content: space-between;
-}
+<style lang="scss" scoped>
+@import "@/app.scss";
 .settings {
   display: flex;
   & > div {

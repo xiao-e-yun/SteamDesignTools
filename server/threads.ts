@@ -1,10 +1,11 @@
 import { workerData } from 'worker_threads'
 import { WorkerDataType } from 'VS/protocol'
-import { path } from './utils'
+import { hash, path } from './utils'
 import { extname, basename } from "path"
 import Jimp from 'jimp'
 import { exec as $exec } from 'child_process'
 import { writeFile } from 'fs/promises'
+import puppeteer from "puppeteer-core"
 
 // 多線程運算
 (async ($type: keyof WorkerDataType) => {
@@ -94,13 +95,64 @@ import { writeFile } from 'fs/promises'
                 return new Promise(resolve => {
                     const cmd = `\"${pngquant}\" --quality ${quality} --speed ${speed} - < \"${tmp_path}\" > \"${output_path}\"`
                     $exec(cmd, { encoding: 'utf8' },
-                        (e, s, stderr) => {
+                        (e, _s, stderr) => {
                             if (e) console.error(e, stderr)
                             resolve()
                         })
                 })
             }
             break;
+        }
+        case "upload_artwork": {
+            const { option: $option, data: $data } = worker_data as SwitchDataType<typeof $type>
+
+            const browserURL = 'http://127.0.0.1:' + $option.port.toString();
+            const browser = await puppeteer.connect({browserURL})
+
+            for (const item of $data) {
+                let $path:string
+                if($option.base64){
+                    const img = await decode_image(item.data)
+                    $path = path("tmp",hash()+extname(item.name))
+                    await img.writeAsync($path)
+                }
+                else $path = item.data
+
+                const page = await browser.newPage()
+                await page.goto("https://steamcommunity.com/sharedfiles/edititem/767/3/")
+                let control = [] as Promise<any>[]
+                control.push(page.$eval("#title",(el,val)=>(el as HTMLInputElement).value = val as string,item.name))
+                control.push((await page.$("#file"))?.uploadFile($path) as Promise<void>)
+                control.push((await page.$("#agree_terms"))?.click() as Promise<void>)
+                await Promise.all(control)
+                await page.evaluate((type)=>{
+                    switch(type as string){
+                        //Typescript :3
+                        case("artwork"):{
+                            //@ts-ignore
+                            $J('#image_width').val(1000),$J('#image_height').val(1)
+                            break
+                        }
+                        case("screenshot"):{
+                            //@ts-ignore
+                            $J('#image_width').val(1000),$J('#image_height').val(1),$J('[name=file_type]').val(5)
+                            break
+                        }
+                        case("workshop"):{
+                            //@ts-ignore
+                            $J('[name=consumer_app_id]').val(480),$J('[name=file_type]').val(0),$J('[name=visibility]').val(0)
+                            break
+                        }
+                    }
+                    
+                    //@ts-ignore
+                    SubmitItem(false)
+                },$option.type)
+                await page.waitForNavigation().catch(()=>{})
+                await page.close()
+            }
+            browser.disconnect()
+            break
         }
     }
 })(workerData.type)

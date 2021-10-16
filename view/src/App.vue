@@ -67,11 +67,15 @@ body {
 
 #main {
   width: 100%;
+  position: relative;
   padding: 1.5em 1.5em 0 1.5em;
   overflow: overlay;
   align-items: baseline;
   display: flex;
   flex-direction: column;
+  &.full {
+    padding: 0;
+  }
 }
 
 #loading {

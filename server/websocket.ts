@@ -43,6 +43,15 @@ export default class {
         }
     }
 
+    once<T extends keyof DataType>(key: T, fun: (data: WebSocketEvent<T>["sender"]) => DataType[T]["resolve"]|Promise<DataType[T]["resolve"]>): void
+    once(key: string, fun: (data: WebSocketEvent["sender"]) => any) {
+        this.event[key] = (data)=>{
+            fun(data)
+            delete this.event[key]
+        }
+        console.log(this._info + key + "|一次性註冊成功")
+    }
+
     off<T extends keyof DataType>(key: T): void
     off(key: string) {
         if (!this.event[key]) console.warn(this._info + key + "|嘗試刪除未註冊")

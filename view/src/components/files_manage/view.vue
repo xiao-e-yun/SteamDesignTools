@@ -101,7 +101,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import "../app.scss";
+@import "@/app.scss";
 .imgs_preview {
   margin-right: 2em;
   width: 100%;

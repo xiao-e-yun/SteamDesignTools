@@ -15,6 +15,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "壓縮",
     component: import_vue("compression"),
   },
+  {
+    path: "/upload",
+    name: "上傳",
+    component: import_vue("upload"),
+  },
   //
   {
     path: "/settings",

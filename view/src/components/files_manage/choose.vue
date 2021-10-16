@@ -52,8 +52,8 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss" scoped>
-@import "../app.scss";
+<style lang="scss">
+@import "@/app.scss";
 .drop_here {
   width: 100%;
   background-color: $side-3;
@@ -62,6 +62,7 @@ export default defineComponent({
   cursor: pointer;
   & > h1 {
     text-align: center;
+    margin: 0;
   }
   & > input {
     display: none;

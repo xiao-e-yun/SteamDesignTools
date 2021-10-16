@@ -32,7 +32,7 @@ async function done() {
     console.log("原始檔編譯完成")
     console.log("二進制編譯中")
     const promise = []
-    promise.push(exec("pkg package.json -o=dist/core"))
+    promise.push(exec("pkg package.json -o=dist/core --public"))
     promise.push(exec("cargo build --release",{cwd:"./launcher"}).then(async()=>{
         await fs.rename("./launcher/dist/release/launcher.exe", "./dist/SteamDesignTools.exe")
         await fs.rename("./build/www", "./dist/www")

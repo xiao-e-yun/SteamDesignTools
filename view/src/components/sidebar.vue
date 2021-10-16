@@ -26,7 +26,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import "../app.scss";
+@import "@/app.scss";
 #sidebar {
   width: max-content;
   display: flex;
