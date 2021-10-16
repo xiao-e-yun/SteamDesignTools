@@ -2,16 +2,16 @@
   <form class="login_steam" autocomplete="on">
     <h2>登入至Steam</h2>
     <template v-if="send_to === ''">
-      <p>帳號:<input v-model="account.username" type="text" /></p>
+      <p>帳號 <input v-model="account.username" type="text" /></p>
       <p>
-        密碼:<input
+        密碼 <input
           v-model="account.password"
           type="password"
           autocomplete="on"
         />
       </p>
     </template>
-    <p v-else>驗證碼:<input v-model="guard" type="text" /></p>
+    <p v-else>驗證碼 <input v-model="guard" type="text" /></p>
     <button
       type="submit"
       @click.prevent="login(send_to !== '')"
@@ -38,6 +38,7 @@ export default defineComponent({
   },
   methods: {
     async login(guard: boolean) {
+      this.loading(true)
       if (!guard) {
         const data = (await this.$ws.get("login_steam", this.account)).data;
         if (data.success) {
@@ -59,6 +60,7 @@ export default defineComponent({
           console.warn(data.error);
         }
       }
+      this.loading(false)
     },
   },
   watch: {
@@ -71,4 +73,40 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import "@/app.scss";
+
+.login_steam{
+  background-color: $side-3;
+  font-size: 2rem;
+  padding:.2em 1.2em .6em;
+  width: max-content;
+  &>h2{
+    margin: .4em 0;
+  }
+  &>p{
+    margin: .4em 0;
+    &>input{
+      background-color: $side-2;
+      font-size: 1em;
+      border: none;
+      color: $main;
+    }
+  }
+  &>button{
+    font-size: .8em;
+    font-weight: 800;
+    background-color: $side-2;
+    color:$main;
+    padding:.2em .6em;
+    transition-property: color,background-color;
+    transition-timing-function: ease-in-out;
+    transition-duration: .2s;
+    border-radius: 0;
+    cursor: pointer;
+    border:none;
+    &:hover{
+      color: $main;
+      background-color: $bg;
+    }
+  }
+}
 </style>

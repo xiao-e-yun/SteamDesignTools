@@ -130,19 +130,33 @@ export default function (ws: _ws) {
             //輸入帳號密碼
             Promise.all(inputs)
             .then(async()=>(await page.$("#login_btn_signin>button"))?.click());
+            let login = false
 
-            page.waitForNavigation().then(async()=>{
+            page.waitForNavigation({
+                timeout:5000,
+            }).then(async()=>{
+                login = true
                 //轉址等同成功
                 await save()
                 resolve({
                     success:true,
                     guard:{need:false}
                 })
-            }).catch(()=>{})
+            }).catch(()=>{
+                if(login) return
+                login = true
+                resolve({
+                    success:false,
+                    guard:{need:false},
+                    error:"account or password incorrect"
+                })  
+            })
 
             page.waitForSelector(".loginTwoFactorCodeModal",{
-                visible:true
+                visible:true,
+                timeout:5000,
             }).then(()=>{
+                login = true
                 const get = "login_guard$" + hash()
                 ws.on(get as "login_guard",async(data)=>{
                     await page.$eval("#twofactorcode_entry",(el,val)=>{
@@ -167,8 +181,15 @@ export default function (ws: _ws) {
                     success:true,
                     guard:{get,need:true}
                 })
-
-            }).catch(()=>{})
+            }).catch(()=>{
+                if(login) return
+                login = true
+                resolve({
+                    success:false,
+                    guard:{need:false},
+                    error:"account or password incorrect"
+                })  
+            })
 
             async function save() {
                 const $config = await config("cookies") || {}

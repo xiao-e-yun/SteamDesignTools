@@ -72,7 +72,6 @@ export default defineComponent({
         screenshot: "螢幕截圖",
         workshop: "工作坊",
       },
-      show_type_list: false,
       active: "",
       imgs: [] as { name: string; path: string; file?: File }[],
       cookies: {} as { [user: string]: Protocol.Network.Cookie[] },
@@ -87,7 +86,6 @@ export default defineComponent({
       const reader = new FileReader();
       const imgs = [] as DataType["build"]["req"]["imgs"];
 
-      console.log(this.imgs);
       if (this.edit_setting.base64) {
         for (const img of this.imgs) {
           const data = (await read_img(img.file as File)) as string;
