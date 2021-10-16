@@ -4,11 +4,8 @@
     <template v-if="send_to === ''">
       <p>帳號 <input v-model="account.username" type="text" /></p>
       <p>
-        密碼 <input
-          v-model="account.password"
-          type="password"
-          autocomplete="on"
-        />
+        密碼
+        <input v-model="account.password" type="password" autocomplete="on" />
       </p>
     </template>
     <p v-else>驗證碼 <input v-model="guard" type="text" /></p>
@@ -38,7 +35,7 @@ export default defineComponent({
   },
   methods: {
     async login(guard: boolean) {
-      this.loading(true)
+      this.loading(true);
       if (!guard) {
         const data = (await this.$ws.get("login_steam", this.account)).data;
         if (data.success) {
@@ -60,7 +57,7 @@ export default defineComponent({
           console.warn(data.error);
         }
       }
-      this.loading(false)
+      this.loading(false);
     },
   },
   watch: {
@@ -74,36 +71,36 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import "@/app.scss";
 
-.login_steam{
+.login_steam {
   background-color: $side-3;
   font-size: 2rem;
-  padding:.2em 1.2em .6em;
+  padding: 0.2em 1.2em 0.6em;
   width: max-content;
-  &>h2{
-    margin: .4em 0;
+  & > h2 {
+    margin: 0.4em 0;
   }
-  &>p{
-    margin: .4em 0;
-    &>input{
+  & > p {
+    margin: 0.4em 0;
+    & > input {
       background-color: $side-2;
       font-size: 1em;
       border: none;
       color: $main;
     }
   }
-  &>button{
-    font-size: .8em;
+  & > button {
+    font-size: 0.8em;
     font-weight: 800;
     background-color: $side-2;
-    color:$main;
-    padding:.2em .6em;
-    transition-property: color,background-color;
+    color: $main;
+    padding: 0.2em 0.6em;
+    transition-property: color, background-color;
     transition-timing-function: ease-in-out;
-    transition-duration: .2s;
+    transition-duration: 0.2s;
     border-radius: 0;
     cursor: pointer;
-    border:none;
-    &:hover{
+    border: none;
+    &:hover {
       color: $main;
       background-color: $bg;
     }

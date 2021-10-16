@@ -195,7 +195,7 @@ export default defineComponent({
 @import "@/app.scss";
 .files_manage {
   .setting_type {
-    &:hover {
+    & > h2:hover {
       color: $bg;
       background-color: $main;
     }
