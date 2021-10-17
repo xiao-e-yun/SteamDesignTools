@@ -194,7 +194,7 @@ export default function (ws: _ws) {
             async function save() {
                 const $config = await config("cookies") || {}
                 $config[data.username] = await page.cookies()
-                config([{
+                await config([{
                     key:"cookies",
                     val:$config
                 }])

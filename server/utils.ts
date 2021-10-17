@@ -35,7 +35,7 @@ function config<Key extends keyof Config>(key: Key): Promise<Config[Key]>
  * @param key 要讀取的值
  * @param val 要設定的值
  */
-function config<Key extends keyof Config>(key_and_val:{key: Key, val: Config[Key]}[]): void
+function config<Key extends keyof Config>(key_and_val:{key: Key, val: Config[Key]}[]):Promise<void>
 
 /** @returns 整個 Config */
 function config(): Promise<Config>
@@ -51,7 +51,7 @@ async function config<Key extends keyof Config>
         for (const item of key) {
             config[item.key] = item.val;
         } // 設定
-        fs.writeFile(config_path, JSON.stringify(config));
+        await fs.writeFile(config_path, JSON.stringify(config));
     }
 }
 
@@ -78,12 +78,13 @@ async function worker<T extends keyof FilterKeysToObject<DataType,{worker:{optio
     return Promise.all(worker_threads)
 }
 
-function create_browser(options?:puppeteer.LaunchOptions & puppeteer.BrowserLaunchArgumentOptions & puppeteer.BrowserConnectOptions){
+async function create_browser(options?:puppeteer.LaunchOptions & puppeteer.BrowserLaunchArgumentOptions & puppeteer.BrowserConnectOptions){
     const opt = {
         executablePath:getEdgePath(),
+        headless:!await config("dev_mode"),
         ...options||{}
     }
-    return puppeteer.launch(opt)
+    return await puppeteer.launch(opt)
 }
 
 function hash(){ let result = ''; const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; for (let i = 0; i < 12; i++)result += characters.charAt(Math.floor(Math.random() * 62)); return result }

@@ -6,4 +6,5 @@ export default interface Config {
     clear_tmp:boolean
     before_clear_output:boolean
     cookies:{[user:string]:Protocol.Network.Cookie[]}
+    dev_mode:boolean
 }

@@ -149,6 +149,7 @@ import puppeteer from "puppeteer-core"
                     SubmitItem(false)
                 },$option.type)
                 await page.waitForNavigation().catch(()=>{})
+                await page.screenshot({path:item.name + "$upload_artwork.png"})
                 await page.close()
             }
             browser.disconnect()

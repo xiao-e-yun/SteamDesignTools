@@ -3,6 +3,7 @@ import express from 'express'
 import SocketServer from 'ws'
 import { Server } from 'http'
 import process from "process"
+import { createWriteStream } from "fs"
 
 //@ts-ignore 這個沒有定義
 import isPortReachable = require('is-port-reachable');
@@ -12,11 +13,12 @@ import _websocket from './websocket'
 import * as utils from "./utils"
 import main from './main'
 
-;(async () => {
-    const dev_mode = process.env.NODE_ENV === "development"
+(async () => {
+    const development = process.env.NODE_ENV === "development"
+    const dev_mode = await utils.config("dev_mode")||false
     //初始化
-    if(process.argv[2] !== "run" && !dev_mode) return
-    
+    if(process.argv[2] !== "run" && !development) return
+
     //啟動伺服器
     //伺服器設定
     let websocket: _websocket
@@ -38,7 +40,7 @@ import main from './main'
         maxPayload: 1024 * 1024 * 1024 * 2 //2GB
     })
 
-    if (dev_mode) {
+    if (development) {
         console.log("開發模式")
         console.log(`請手動開啟 http://localhost:${port}`)
     } else //啟動瀏覽器 
@@ -57,6 +59,17 @@ import main from './main'
         connection_count++
         if (connection_count > 1) return ws.close() // 忽略連線
         if (timeout) clearTimeout(timeout)
+
+        //開發者模式
+        if(dev_mode){
+            const output = createWriteStream(utils.path("tmp","stdout.log"));
+            const errorOutput = createWriteStream(utils.path("tmp","stderr.log"));
+            const logger = new console.Console({
+                stdout: output,
+                stderr: errorOutput
+            })
+            console = logger
+        }
 
         //開始收發資料
         websocket = new _websocket(ws)

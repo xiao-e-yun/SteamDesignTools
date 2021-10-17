@@ -84,6 +84,12 @@ export default defineComponent({
           key: "before_clear_output",
           type: "checkbox",
         },
+        {
+          name: "開發者模式",
+          description: "啟用開發者模式",
+          key: "dev_mode",
+          type: "checkbox",
+        },
       ] as {
         name: string;
         description: string;
@@ -94,8 +100,9 @@ export default defineComponent({
       }[],
       config: {
         thread_count: 5,
-        clear_output: false,
+        dev_mode: false,
         clear_tmp: false,
+        clear_output: false,
         before_clear_output: true,
       } as Config,
     };
@@ -126,6 +133,7 @@ export default defineComponent({
 @import "@/app.scss";
 .settings {
   display: flex;
+  flex-wrap: wrap;
   & > div {
     margin: 0.6rem;
     padding: 0.4rem 1rem 1rem 1rem;

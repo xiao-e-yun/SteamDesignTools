@@ -25,15 +25,16 @@ const fs = $fs.promises;
     )
 
     Promise.all(promise).then(done)
-    function $done({error,stderr,stdout}){console.log(error, "\n\n\n", stderr, "\n\n\n", stdout)}
 })();
+function $done({error,stderr,stdout}){console.log(error, "\n\n\n", stderr, "\n\n\n", stdout)}
 
 async function done() {
     console.log("原始檔編譯完成")
     console.log("二進制編譯中")
     const promise = []
-    promise.push(exec("pkg package.json -o=dist/core --public"))
-    promise.push(exec("cargo build --release",{cwd:"./launcher"}).then(async()=>{
+    promise.push(exec("pkg package.json -o=dist/core --public")).then($done)
+    promise.push(exec("cargo build --release",{cwd:"./launcher"}).then(async(info)=>{
+        $done(info)
         await fs.rename("./launcher/dist/release/launcher.exe", "./dist/SteamDesignTools.exe")
         await fs.rename("./build/www", "./dist/www")
         await fs.rename("./build/lib", "./dist/lib")
