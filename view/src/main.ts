@@ -7,7 +7,7 @@ import _ws from "./websocket";
 addEventListener("resize", () => window.resizeTo(1200, 600));
 window.resizeTo(1200, 600);
 
-const ws = (window.ws = new _ws());
+const ws = window.ws = new _ws();
 const app = createApp(App);
 const app_prop = app.config.globalProperties;
 app_prop.$ws = ws;
