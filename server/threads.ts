@@ -76,7 +76,7 @@ import puppeteer from "puppeteer-core"
                         await save(out, img.quality($option.quality[1]) as Jimp)
                     } else if ($option.base64) {
                         const tmp = path("tmp", "compression$" + data.name)
-                        await save(out, img)
+                        await save(tmp, img)
                         await exec(tmp, out)
                     }
                 } else {
@@ -93,7 +93,7 @@ import puppeteer from "puppeteer-core"
                 const quality = $option.quality[0] + "-" + $option.quality[1]
                 const speed = $option.speed
                 return new Promise(resolve => {
-                    const cmd = `\"${pngquant}\" --quality ${quality} --speed ${speed} - < \"${tmp_path}\" > \"${output_path}\"`
+                    const cmd = `\"${pngquant}\" --quality=${quality} --speed=${speed} - < \"${tmp_path}\" > \"${output_path}\"`
                     $exec(cmd, { encoding: 'utf8' },
                         (e, _s, stderr) => {
                             if (e) console.error(e, stderr)

@@ -15,9 +15,9 @@ import main from './main'
 
 (async () => {
     const development = process.env.NODE_ENV === "development"
-    const dev_mode = await utils.config("dev_mode")||false
+    const dev_mode = await utils.config("dev_mode") || false
     //初始化
-    if(process.argv[2] !== "run" && !development) return
+    if (process.argv[2] !== "run" && !development) return
 
     //啟動伺服器
     //伺服器設定
@@ -55,15 +55,15 @@ import main from './main'
         process.exit()
     }, 5000)
 
-    wss.on('connection',async ws => {
+    wss.on('connection', async ws => {
         connection_count++
         if (connection_count > 1) return ws.close() // 忽略連線
         if (timeout) clearTimeout(timeout)
 
         //開發者模式
-        if(dev_mode){
-            const output = createWriteStream(utils.path("tmp","stdout.log"));
-            const errorOutput = createWriteStream(utils.path("tmp","stderr.log"));
+        if (dev_mode) {
+            const output = createWriteStream(utils.path("tmp", "stdout.log"));
+            const errorOutput = createWriteStream(utils.path("tmp", "stderr.log"));
             const logger = new console.Console({
                 stdout: output,
                 stderr: errorOutput
@@ -86,11 +86,11 @@ import main from './main'
     app.use(express.static(utils.path('www')))
     app.get('*', function (req, res) {
         const get_path = req.query.path
-        if(get_path){
+        if (get_path) {
             const path = decodeURI(get_path as string)
             res.sendFile(path)
-        }else{
-            res.sendFile(utils.path('www','index.html'));
+        } else {
+            res.sendFile(utils.path('www', 'index.html'));
         }
     });
 })()
