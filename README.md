@@ -1,3 +1,6 @@
+> [!WARNING]
+> It has been completely rewritten. At https://github.com/xiao-e-yun/steam-design-tools
+
 # SteamDesignTools
 快速建立Steam個人檔案藝術作品  
 
